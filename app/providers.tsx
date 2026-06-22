@@ -6,22 +6,24 @@ import { makeStore } from "../lib/store";
 import { PersistGate } from "redux-persist/integration/react";
 import SpinnerbLoader from "@/components/ui/SpinnerbLoader";
 import { CurrencyProvider } from "@/components/providers/CurrencyProvider";
-import { ImageKitProvider } from "@imagekit/next";
+
+// Standby — restore when ImageKit is re-enabled:
+// import { ImageKitProvider } from "@imagekit/next";
+//
+// type Props = {
+//   children: React.ReactNode;
+//   imageKitUrlEndpoint?: string;
+// };
+//
+// Wrap children with ImageKitProvider when imageKitUrlEndpoint is set.
 
 type Props = {
   children: React.ReactNode;
-  /** When set, enables `@imagekit/next` Image/Video and URL helpers app-wide. */
   imageKitUrlEndpoint?: string;
 };
 
-const Providers = ({ children, imageKitUrlEndpoint }: Props) => {
+const Providers = ({ children }: Props) => {
   const { store, persistor } = makeStore();
-
-  const inner = (
-    <CurrencyProvider>
-      {children}
-    </CurrencyProvider>
-  );
 
   return (
     <Provider store={store}>
@@ -33,13 +35,9 @@ const Providers = ({ children, imageKitUrlEndpoint }: Props) => {
         }
         persistor={persistor}
       >
-        {imageKitUrlEndpoint ? (
-          <ImageKitProvider urlEndpoint={imageKitUrlEndpoint}>
-            {inner}
-          </ImageKitProvider>
-        ) : (
-          inner
-        )}
+        <CurrencyProvider>
+          {children}
+        </CurrencyProvider>
       </PersistGate>
     </Provider>
   );

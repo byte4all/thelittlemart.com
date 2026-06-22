@@ -1,17 +1,25 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import ImageKit, { toFile } from "@imagekit/nodejs";
 import { requireAdminApi } from "../_utils";
-import { getImageKitUploadFolder, isImageKitServerUploadConfigured } from "@/lib/imagekit";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+// Standby — image upload disabled for now. Restore imports below when re-enabling.
+// import { writeFile, mkdir } from "fs/promises";
+// import path from "path";
+// import ImageKit, { toFile } from "@imagekit/nodejs";
+// import { getImageKitUploadFolder, isImageKitServerUploadConfigured } from "@/lib/imagekit";
+
+// const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"];
+// const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function POST(request: Request) {
   const forbidden = await requireAdminApi(request);
   if (forbidden) return forbidden;
 
+  return NextResponse.json(
+    { success: false, error: "Image upload is temporarily disabled." },
+    { status: 503 }
+  );
+
+  /*
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -69,4 +77,5 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+  */
 }
