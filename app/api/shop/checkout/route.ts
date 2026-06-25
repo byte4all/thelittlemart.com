@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getStackUserAndSync } from "@/lib/auth";
+import { getAuthUserAndSync } from "@/lib/auth";
 import { addContactToResend } from "@/lib/resend";
 import { createBill } from "@/lib/billplz";
 import { roundTo2 } from "@/lib/currency";
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       userId?: string;
     };
 
-    const dbUser = await getStackUserAndSync(request);
+    const dbUser = await getAuthUserAndSync(request);
     if (!dbUser) {
       return NextResponse.json(
         { success: false, error: "Please sign in to checkout." },

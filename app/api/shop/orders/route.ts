@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getStackUserAndSync } from "@/lib/auth";
+import { getAuthUserAndSync } from "@/lib/auth";
 import { addContactToResend } from "@/lib/resend";
 import { roundTo2 } from "@/lib/currency";
 
 /** GET: list orders (payments) for the current user. */
 export async function GET(request: Request) {
   try {
-    const user = await getStackUserAndSync(request);
+    const user = await getAuthUserAndSync(request);
     if (!user) {
       return NextResponse.json({ error: "Please sign in to view orders." }, { status: 401 });
     }
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     };
 
     // Sync Stack user to DB and use our user id for the order (or use body userId for backwards compatibility)
-    const dbUser = await getStackUserAndSync(request);
+    const dbUser = await getAuthUserAndSync(request);
     const userId = dbUser?.id ?? bodyUserId ?? null;
 
     if (!shippingAddress || !items || !Array.isArray(items) || items.length === 0) {

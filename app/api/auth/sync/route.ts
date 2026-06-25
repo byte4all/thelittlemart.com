@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { getStackUserAndSync } from "@/lib/auth";
+import { getAuthUserAndSync } from "@/lib/auth";
 
 /**
  * GET /api/auth/sync
- * Syncs the current Stack user to our database. Call this after sign-in/sign-up
+ * Syncs the current Neon Auth user to our database. Call this after sign-in/sign-up
  * (e.g. on app load when user is logged in) so the user exists in our users table.
  */
 export async function GET(request: Request) {
   try {
-    const user = await getStackUserAndSync(request);
+    const user = await getAuthUserAndSync(request);
     if (!user) {
       return NextResponse.json({ success: true, user: null });
     }

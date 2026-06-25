@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { useUser } from '@stackframe/stack'
+import { useAuthUser } from '@/lib/auth/client'
 import {
   FiHome,
   FiPackage,
@@ -32,13 +32,13 @@ export default function AdminShell({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const user = useUser({ or: 'return-null' })
+  const user = useAuthUser()
 
   useEffect(() => {
     if (user === undefined) return
     if (user === null) {
       const returnUrl = encodeURIComponent(pathname || '/admin/products')
-      router.replace(`/sign-in?redirect=${returnUrl}`)
+      router.replace(`/auth/sign-in?redirect=${returnUrl}`)
     }
   }, [user, pathname, router])
 

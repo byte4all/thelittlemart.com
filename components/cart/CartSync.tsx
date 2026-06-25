@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@stackframe/stack";
+import { useAuthUser } from "@/lib/auth/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
 import { RootState } from "@/lib/store";
 import { setCartFromServer } from "@/lib/features/carts/cartsSlice";
@@ -120,7 +120,7 @@ let loadedForUserId: string | null = null;
  * - When local cart changes, persist it to the API (debounced).
  */
 export default function CartSync() {
-  const user = useUser({ or: "return-null" });
+  const user = useAuthUser();
   const dispatch = useAppDispatch();
   const cart = useAppSelector((state: RootState) => state.carts.cart);
   const prevUserId = useRef<string | null>(null);

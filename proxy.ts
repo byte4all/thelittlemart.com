@@ -1,30 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { auth } from "@/lib/auth/server";
 import { REDIRECT_AFTER_LOGIN_COOKIE_NAME } from "@/lib/redirect-after-login";
 
-/**
- * When user lands on "/" with a redirect_after_login cookie (e.g. after
- * sign-in from checkout), redirect them to the stored path so they reach
- * /checkout instead of the homepage. Stack Auth may redirect to "/" after
- * magic link; this ensures they are sent to the intended page.
- */
-export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname !== "/") {
-    return NextResponse.next();
-  }
+const authMiddleware = auth.middleware({
+  loginUrl: "/auth/sign-in",
+});
 
+const PROTECTED_PREFIXES = ["/admin", "/account", "/checkout"];
+
+function redirectAfterLoginIfPresent(request: NextRequest) {
   const cookie = request.cookies.get(REDIRECT_AFTER_LOGIN_COOKIE_NAME);
   const value = cookie?.value?.trim();
-  if (!value) return NextResponse.next();
+  if (!value) return null;
 
   let path: string;
   try {
     path = decodeURIComponent(value);
   } catch {
-    return NextResponse.next();
+    return null;
   }
   if (!path.startsWith("/") || path.startsWith("//")) {
-    return NextResponse.next();
+    return null;
   }
 
   const res = NextResponse.redirect(new URL(path, request.url));
@@ -36,6 +33,27 @@ export function proxy(request: NextRequest) {
   return res;
 }
 
+export default async function proxy(request: NextRequest) {
+  if (request.headers.has("Next-Action")) {
+    return NextResponse.next();
+  }
+
+  const { pathname } = request.nextUrl;
+
+  // Homepage is public — only handle post-login redirect cookie here.
+  // Do not require auth on "/" or magic-link/OAuth return params are lost.
+  if (pathname === "/") {
+    const redirect = redirectAfterLoginIfPresent(request);
+    return redirect ?? NextResponse.next();
+  }
+
+  if (!PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+    return NextResponse.next();
+  }
+
+  return authMiddleware(request);
+}
+
 export const config = {
-  matcher: "/",
+  matcher: ["/", "/admin/:path*", "/account/:path*", "/checkout/:path*"],
 };

@@ -15,5 +15,5 @@ export function getBaseUrl(): string {
     // Prevent accidental localhost canonicals/sitemap URLs in production.
     return "https://www.aquaheaven.com.my";
   }
-  return "http://localhost:3000";
+  return "https://localhost:3000";
 }

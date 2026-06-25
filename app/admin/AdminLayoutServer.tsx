@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getCurrentAdminGate } from "@/lib/auth";
 import AdminShell from "./AdminShell";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Admin",
   robots: {
@@ -23,7 +25,7 @@ export default async function AdminLayout({
     if (gate.signedIn) {
       redirect("/");
     }
-    redirect("/sign-in?redirect=%2Fadmin");
+    redirect("/auth/sign-in?redirect=%2Fadmin");
   }
   return <AdminShell>{children}</AdminShell>;
 }

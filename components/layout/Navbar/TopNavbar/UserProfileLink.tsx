@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useUser } from "@stackframe/stack";
+import { useAuthUser } from "@/lib/auth/client";
 
 /**
  * User icon in navbar: links to /account (profile) when logged in,
- * /sign-in when logged out. Prevents redirect to homepage when clicking profile.
+ * /auth/sign-in when logged out. Prevents redirect to homepage when clicking profile.
  */
 export default function UserProfileLink() {
-  const user = useUser({ or: "return-null" });
-  const href = user ? "/account" : "/sign-in";
+  const user = useAuthUser();
+  const href = user ? "/account" : "/auth/sign-in";
 
   return (
     <Link href={href} className="p-1" aria-label={user ? "Account / profile" : "Sign in"}>

@@ -13,7 +13,7 @@ import Image from "next/image";
 import InputGroup from "@/components/ui/input-group";
 import ResTopNavbar from "./ResTopNavbar";
 import CartBtn from "./CartBtn";
-import UserProfileLink from "./UserProfileLink";
+import UserMenu from "./UserMenu";
 
 const data: NavMenu = [
   {
@@ -137,7 +137,7 @@ const TopNavbar = () => {
             />
           </Link>
           <CartBtn />
-          <UserProfileLink />
+          <UserMenu />
         </div>
       </div>
     </nav>

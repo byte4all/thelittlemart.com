@@ -35,9 +35,9 @@ const footerLinksData: FooterLinks[] = [
     id: 4,
     title: "account",
     children: [
-      { id: 41, label: "Login", url: "/sign-in" },
-      { id: 42, label: "Register", url: "/sign-up" },
-      { id: 43, label: "My Orders", url: "/account#payments" },
+      { id: 41, label: "Login", url: "/auth/sign-in" },
+      { id: 42, label: "Register", url: "/auth/sign-up" },
+      { id: 43, label: "My Orders", url: "/account/payments" },
     ],
   },
 ];

@@ -1,22 +1,16 @@
-import type { Metadata } from "next";
-import { SignUp } from "@stackframe/stack";
-import { noIndexMetadata } from "@/lib/seo";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = noIndexMetadata("Sign Up");
-
-export default function Page() {
-  return (
-    <div>
-      <SignUp
-        fullPage={true}
-        automaticRedirect={true}
-        firstTab="magic-link" // or "magic-link"
-        extraInfo={
-          <>
-            When signing up, you agree to our <a href="/terms-of-service">Terms</a>
-          </>
-        }
-      />
-    </div>
-  );
+export default async function SignUpRedirect({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === "string") query.set(key, value);
+    else if (Array.isArray(value)) value.forEach((v) => query.append(key, v));
+  }
+  const qs = query.toString();
+  redirect(`/auth/sign-up${qs ? `?${qs}` : ""}`);
 }

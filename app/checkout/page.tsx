@@ -11,12 +11,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { roundTo2 } from "@/lib/currency";
-import { useUser } from "@stackframe/stack";
+import { useAuthUser } from "@/lib/auth/client";
 import { setRedirectAfterLoginCookie } from "@/lib/redirect-after-login";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const user = useUser({ or: "return-null" });
+  const user = useAuthUser();
   const { cart, totalPrice, adjustedTotalPrice } = useAppSelector((state: RootState) => state.carts);
   const { formatPrice } = useCurrency();
   const subtotalRounded = roundTo2(totalPrice);
@@ -29,7 +29,7 @@ export default function CheckoutPage() {
     if (user === undefined) return;
     if (user === null) {
       setRedirectAfterLoginCookie("/checkout");
-      router.replace(`/sign-in?redirect=${encodeURIComponent("/checkout")}`);
+      router.replace(`/auth/sign-in?redirect=${encodeURIComponent("/checkout")}`);
     }
   }, [user, router]);
 

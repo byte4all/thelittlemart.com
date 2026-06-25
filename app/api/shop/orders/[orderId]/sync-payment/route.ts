@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getBill } from "@/lib/billplz";
 import { markOrderPaidAndSendEmail } from "@/lib/order-confirmation";
 import { sendOrderConfirmationEmail } from "@/lib/resend";
-import { getStackUserAndSync } from "@/lib/auth";
+import { getAuthUserAndSync } from "@/lib/auth";
 
 /**
  * POST /api/shop/orders/[orderId]/sync-payment
@@ -18,7 +18,7 @@ export async function POST(
   { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
-    const user = await getStackUserAndSync(_request);
+    const user = await getAuthUserAndSync(_request);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

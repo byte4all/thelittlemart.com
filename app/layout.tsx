@@ -1,14 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackClientApp } from "@/stack/client";
-import { stackServerApp } from "@/stack/server";
 import "@/styles/globals.css";
 import { satoshi } from "@/styles/fonts";
 import HolyLoader from "holy-loader";
 import Providers from "./providers";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import AuthSync from "@/components/auth/AuthSync";
+import AuthProvider from "@/components/auth/AuthProvider";
 import { SITE_NAME, SITE_TAGLINE, buildCanonical, getMetadataBase } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -49,7 +47,7 @@ export default async function RootLayout({
   const gaId = "G-XQQ14H23QV";
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={satoshi.className}>
         {/* Google tag (gtag.js) */}
         <Script
@@ -66,15 +64,16 @@ export default async function RootLayout({
             gtag('config', '${gaId}');
           `}
         </Script>
-        <StackProvider app={stackClientApp}><StackTheme><StackProvider app={stackServerApp}><StackTheme>
-        <HolyLoader color="#868686" />
-        <Providers>
-          <AuthSync />
-          <ConditionalLayout>
-            {children}
-          </ConditionalLayout>
-        </Providers>
-      </StackTheme></StackProvider></StackTheme></StackProvider></body>
+        <AuthProvider>
+          <HolyLoader color="#868686" />
+          <Providers>
+            <AuthSync />
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
+          </Providers>
+        </AuthProvider>
+      </body>
     </html>
   );
 }

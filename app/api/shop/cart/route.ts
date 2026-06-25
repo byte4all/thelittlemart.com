@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getStackUserAndSync } from "@/lib/auth";
+import { getAuthUserAndSync } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getStackUserAndSync(request);
+    const user = await getAuthUserAndSync(request);
     if (!user) {
       return NextResponse.json({ success: true, items: [] });
     }
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   try {
-    const user = await getStackUserAndSync(request);
+    const user = await getAuthUserAndSync(request);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
