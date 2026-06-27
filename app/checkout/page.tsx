@@ -123,7 +123,7 @@ export default function CheckoutPage() {
     return (
       <main className="pb-20 max-w-frame mx-auto px-4 xl:px-0 py-12 flex flex-col items-center justify-center min-h-[40vh]">
         <div className="animate-spin rounded-full h-10 w-10 border-2 border-brand border-t-transparent mb-4" />
-        <p className="text-black/60">Redirecting to sign in…</p>
+        <p className="text-foreground/60">Redirecting to sign in…</p>
       </main>
     );
   }
@@ -131,7 +131,7 @@ export default function CheckoutPage() {
   if (!cart || cart.items.length === 0) {
     return (
       <main className="pb-20 max-w-frame mx-auto px-4 xl:px-0 py-12">
-        <p className="text-black/60 mb-4">Your cart is empty.</p>
+        <p className="text-foreground/60 mb-4">Your cart is empty.</p>
         <Button asChild className="rounded-full">
           <Link href="/shop">Continue shopping</Link>
         </Button>
@@ -185,8 +185,8 @@ export default function CheckoutPage() {
             </InputGroup>
 
             {fulfillmentMethod === "pickup" ? (
-              <div className="rounded-xl border border-black/10 p-4 bg-[#F0F0F0]/50">
-                <p className="text-sm font-medium text-black mb-1">
+              <div className="rounded-xl border border-brand/10 p-4 bg-brand/5">
+                <p className="text-sm font-medium text-brand mb-1">
                   Pickup location
                 </p>
                 <PickupAddressLink />
@@ -238,7 +238,7 @@ export default function CheckoutPage() {
                     inputMode="numeric"
                     pattern="[0-9]*"
                   />
-                  <p className="text-xs text-black/50 mt-1">
+                  <p className="text-xs text-foreground/50 mt-1">
                     Kuala Lumpur: 50000–60000
                   </p>
                 </InputGroup>
@@ -255,11 +255,11 @@ export default function CheckoutPage() {
               </>
             )}
           </div>
-          <div className="lg:w-[400px] p-5 rounded-[20px] border border-black/10 h-fit space-y-4">
-            <h6 className="text-xl font-bold text-black">Order total</h6>
+          <div className="lg:w-[400px] p-5 rounded-[20px] border border-brand/10 h-fit space-y-4">
+            <h6 className="text-xl font-bold text-foreground">Order total</h6>
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-black/60">Subtotal</span>
+                <span className="text-foreground/60">Subtotal</span>
                 <span className="font-medium">{formatPrice(subtotalRounded)}</span>
               </div>
               <FulfillmentSummaryRow
@@ -267,10 +267,10 @@ export default function CheckoutPage() {
                 subtotal={subtotalRounded}
                 formatPrice={formatPrice}
               />
-              <hr className="border-t-black/10" />
+              <hr className="border-t-brand/10" />
               <p className="text-2xl font-bold">{formatPrice(orderTotalRounded)}</p>
             </div>
-            <p className="text-sm text-black/60">
+            <p className="text-sm text-foreground/60">
               You will be redirected to Billplz to pay securely.
             </p>
             {error && (

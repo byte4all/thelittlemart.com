@@ -29,14 +29,14 @@ export default function FulfillmentSelector({
 
   return (
     <div className={cn("flex flex-col space-y-3", className)}>
-      <span className="text-sm font-medium text-black/70">Delivery method</span>
+      <span className="text-sm font-medium text-foreground/70">Delivery method</span>
 
       <div
         className={cn(
           "rounded-xl border transition-colors",
           method === "pickup"
-            ? "border-black bg-black/[0.03]"
-            : "border-black/10"
+            ? "border-brand bg-brand/5"
+            : "border-brand/10"
         )}
       >
         <button
@@ -44,12 +44,12 @@ export default function FulfillmentSelector({
           onClick={() => onChange("pickup")}
           className={cn(
             "w-full text-left p-4 transition-colors",
-            method !== "pickup" && "hover:border-black/30"
+            method !== "pickup" && "hover:border-brand/30"
           )}
         >
           <div className="flex items-start justify-between gap-3">
-            <span className="font-medium text-black">Self pickup</span>
-            <span className="text-sm font-bold text-black shrink-0">Free</span>
+            <span className="font-medium text-foreground">Self pickup</span>
+            <span className="text-sm font-bold text-brand shrink-0">Free</span>
           </div>
         </button>
         {method === "pickup" && (
@@ -63,19 +63,19 @@ export default function FulfillmentSelector({
         className={cn(
           "w-full text-left rounded-xl border p-4 transition-colors",
           method === "shipping"
-            ? "border-black bg-black/[0.03]"
-            : "border-black/10 hover:border-black/30"
+            ? "border-brand bg-brand/5"
+            : "border-brand/10 hover:border-brand/30"
         )}
       >
         <div className="flex items-start justify-between gap-3">
-          <span className="font-medium text-black">
+          <span className="font-medium text-foreground">
             Shipping ({SHIPPING_DAYS_LABEL})
           </span>
           <div className="text-right shrink-0">
-            <span className="text-sm font-bold text-black">
+            <span className="text-sm font-bold text-brand">
               {shippingFeeLabel}
             </span>
-            <p className="text-xs text-black/40 mt-0.5">
+            <p className="text-xs text-foreground/40 mt-0.5">
               Free on orders over RM {FREE_SHIPPING_THRESHOLD}
             </p>
           </div>
@@ -99,18 +99,18 @@ export function FulfillmentSummaryRow({
   if (method === "pickup") {
     return (
       <div className="flex items-center justify-between">
-        <span className="md:text-xl text-black/60">Pickup</span>
-        <span className="md:text-xl font-bold">Free</span>
+        <span className="md:text-xl text-foreground/60">Pickup</span>
+        <span className="md:text-xl font-bold text-brand">Free</span>
       </div>
     );
   }
 
   return (
     <div className="flex items-center justify-between">
-      <span className="md:text-xl text-black/60">
+      <span className="md:text-xl text-foreground/60">
         Shipping ({SHIPPING_DAYS_LABEL})
       </span>
-      <span className="md:text-xl font-bold">
+      <span className="md:text-xl font-bold text-brand">
         {deliveryFee === 0 ? "FREE SHIPPING" : formatPrice(deliveryFee)}
       </span>
     </div>

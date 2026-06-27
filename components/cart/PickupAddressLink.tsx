@@ -29,7 +29,7 @@ export default function PickupAddressLink({
       title="Open in Google Maps"
       onClick={(e) => e.stopPropagation()}
       className={cn(
-        "group block text-sm text-black/50 transition-colors hover:text-black/70",
+        "group block text-sm text-foreground/50 transition-colors hover:text-brand",
         className
       )}
     >
@@ -42,7 +42,7 @@ export default function PickupAddressLink({
       {showPhone && PICKUP_LOCATION.phone ? (
         <p>{PICKUP_LOCATION.phone}</p>
       ) : null}
-      <p className="text-xs text-black/40 mt-1 opacity-0 transition-opacity group-hover:opacity-100">
+      <p className="text-xs text-brand/70 mt-1 opacity-0 transition-opacity group-hover:opacity-100">
         Open in Google Maps
       </p>
     </a>

@@ -49,18 +49,18 @@ export default function CartPage() {
               your cart
             </h2>
             <div className="flex flex-col lg:flex-row space-y-5 lg:space-y-0 lg:space-x-5 items-start">
-              <div className="w-full p-3.5 md:px-6 flex-col space-y-4 md:space-y-6 rounded-[20px] border border-black/10">
+              <div className="w-full p-3.5 md:px-6 flex-col space-y-4 md:space-y-6 rounded-[20px] border border-brand/10">
                 {cart?.items.map((product, idx, arr) => (
                   <React.Fragment key={idx}>
                     <ProductCard data={product} />
                     {arr.length - 1 !== idx && (
-                      <hr className="border-t-black/10" />
+                      <hr className="border-t-brand/10" />
                     )}
                   </React.Fragment>
                 ))}
               </div>
-              <div className="w-full lg:max-w-[505px] p-5 md:px-6 flex-col space-y-4 md:space-y-6 rounded-[20px] border border-black/10">
-                <h6 className="text-xl md:text-2xl font-bold text-black">
+              <div className="w-full lg:max-w-[505px] p-5 md:px-6 flex-col space-y-4 md:space-y-6 rounded-[20px] border border-brand/10">
+                <h6 className="text-xl md:text-2xl font-bold text-foreground">
                   Order Summary
                 </h6>
                 <FulfillmentSelector
@@ -71,7 +71,7 @@ export default function CartPage() {
                 />
                 <div className="flex flex-col space-y-5">
                   <div className="flex items-center justify-between">
-                    <span className="md:text-xl text-black/60">Subtotal</span>
+                    <span className="md:text-xl text-foreground/60">Subtotal</span>
                     <span className="md:text-xl font-bold">
                       {formatPrice(subtotalRounded)}
                     </span>
@@ -81,9 +81,9 @@ export default function CartPage() {
                     subtotal={subtotalRounded}
                     formatPrice={formatPrice}
                   />
-                  <hr className="border-t-black/10" />
+                  <hr className="border-t-brand/10" />
                   <div className="flex items-center justify-between">
-                    <span className="md:text-xl text-black">Total</span>
+                    <span className="md:text-xl text-foreground">Total</span>
                     <span className="text-xl md:text-2xl font-bold">
                       {formatPrice(totalRounded)}
                     </span>
@@ -103,14 +103,14 @@ export default function CartPage() {
                   </InputGroup>
                   <Button
                     type="button"
-                    className="bg-black rounded-full w-full max-w-[119px] h-[48px]"
+                    className="rounded-full w-full max-w-[119px] h-[48px]"
                   >
                     Apply
                   </Button>
                 </div>
                 <Button
                   type="button"
-                  className="text-sm md:text-base font-medium bg-black rounded-full w-full py-4 h-[54px] md:h-[60px] group"
+                  className="text-sm md:text-base font-medium rounded-full w-full py-4 h-[54px] md:h-[60px] group"
                   asChild
                 >
                   <Link
