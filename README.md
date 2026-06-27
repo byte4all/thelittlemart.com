@@ -82,9 +82,21 @@ To get started with Shopco locally, follow these steps:
    ```
 
 4. **Open in your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000) to view the app.
+   Navigate to [https://localhost:3000](https://localhost:3000) to view the app (use HTTPS in dev for Neon Auth session cookies).
 
-### Resend email list (Stack Auth users)
+### Neon Auth (login)
+
+Default login is **magic link** at `/auth/magic-link`. Users can switch to **password** or **email OTP** from buttons on that page. Register still uses `/auth/sign-up`.
+
+In the [Neon Console](https://console.neon.tech) → your project → branch → **Auth**, enable:
+
+- **Magic Link**
+- **Email OTP** (required for the email-code fallback)
+- **Google OAuth** (optional; matches `social.providers` in `AuthProvider`)
+- **Trusted domains**: `https://localhost:3000` for local dev
+
+Required `.env` variables: `DATABASE_URL`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `NEXT_PUBLIC_BASE_URL` (e.g. `https://localhost:3000`).
+
 
 Signed-in Stack Auth users and users who place orders are automatically added to your Resend contact list so you can email them (newsletters, promos, etc.).
 
@@ -111,7 +123,7 @@ Required environment variables:
 - `BILLPLZ_API_SECRET_KEY`: Billplz API key (live in production)
 - `BILLPLZ_COLLECTION_ID`: Billplz collection ID (live in production)
 - `BILLPLZ_USE_SANDBOX`: set to `"false"` in production to force live; set to `"true"` to force sandbox
-- `BILLPLZ_CALLBACK_BASE_URL`: public base URL for callbacks/redirects (e.g. `https://aquaheaven.com.my`)
+- `BILLPLZ_CALLBACK_BASE_URL`: public base URL for callbacks/redirects (e.g. `https://www.thelittlemart.com`)
 - `BILLPLZ_X_SIGNATURE_KEY` (recommended): set if you enable Billplz X-Signature callbacks
 
 ## Project Structure

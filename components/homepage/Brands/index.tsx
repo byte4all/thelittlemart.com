@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
 
 const brandsData: { id: string; srcUrl: string }[] = [
-  { id: "Kiwi", srcUrl: "/products/brands/kiwi-svg.svg" },
-  { id: "Le Petit Marseillais", srcUrl: "/products/brands/le-petit-marseillais.svg" },
-  { id: "Garnier", srcUrl: "/products/brands/garnier.svg" },
-  { id: "Mixa Bebe", srcUrl: "/products/brands/mixa-bebe.svg" },
-  { id: "Dop", srcUrl: "/products/brands/dop.svg" },
-  { id: "Diadermine", srcUrl: "/products/brands/diadermine.svg" },
+  { id: "APTA", srcUrl: "/products/brands/APTA.svg" },
+  { id: "BIC", srcUrl: "/products/brands/BIC.svg" },
+  { id: "DOMEDIA", srcUrl: "/products/brands/DOMEDIA.svg" },
+  { id: "Itinéraires Des Saveurs", srcUrl: "/products/brands/Itinéraires Des Saveurs.svg" },
+  { id: "MAPED", srcUrl: "/products/brands/MAPED.svg" },
+  { id: "OXFORD", srcUrl: "/products/brands/OXFORD.svg" },
   { id: "LABELL", srcUrl: "/products/brands/labell.svg" },
   { id: "Pomette", srcUrl: "/products/brands/pommette.webp" },
 ];
@@ -200,7 +200,7 @@ const Brands = () => {
         onMouseDown={pauseAutoScroll}
         onWheel={pauseAutoScroll}
         onScroll={handleCarouselScroll}
-        className="max-w-frame mx-auto flex items-center gap-3 md:gap-4 pb-8 md:pb-10 px-4 xl:px-0 overflow-x-auto snap-x snap-mandatory"
+        className="max-w-frame mx-auto flex items-center gap-4 md:gap-5 pb-8 md:pb-10 px-4 xl:px-0 overflow-x-auto snap-x snap-mandatory"
       >
         {loopedBrands.map((brand) => (
           <div key={brand.key} className="relative pt-8">
@@ -217,15 +217,15 @@ const Brands = () => {
                 handleTap(brand.id, brand.key);
               }}
               data-brand-card="true"
-              className="snap-center rounded-lg flex items-center justify-center w-[148px] h-[72px] sm:w-[152px] sm:h-[76px] md:w-[170px] md:h-[84px] lg:w-[184px] lg:h-[90px] p-2.5 shrink-0 bg-white border border-white/50 hover:border-white transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+              className="snap-center rounded-lg flex items-center justify-center w-[176px] h-[96px] sm:w-[200px] sm:h-[108px] md:w-[224px] md:h-[120px] lg:w-[248px] lg:h-[132px] p-2 shrink-0 bg-white border border-white/50 hover:border-white transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
               aria-current={brand.originalIndex === activeIndex ? "true" : "false"}
             >
               <Image
                 src={brand.srcUrl}
-                width={184}
-                height={90}
+                width={248}
+                height={132}
                 loading="lazy"
-                sizes="(max-width: 640px) 148px, (max-width: 768px) 152px, (max-width: 1024px) 170px, 184px"
+                sizes="(max-width: 640px) 176px, (max-width: 768px) 200px, (max-width: 1024px) 224px, 248px"
                 alt={brand.id}
                 className="max-w-full max-h-full w-auto h-auto object-contain pointer-events-none"
               />

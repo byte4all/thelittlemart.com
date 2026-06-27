@@ -18,15 +18,14 @@ export default function TwitterImage() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          background:
-            "linear-gradient(135deg, rgba(8,67,84,1) 0%, rgba(21,42,69,1) 50%, rgba(10,18,31,1) 100%)",
+          background: "#2596be",
           color: "white",
           fontFamily: "Arial",
           padding: "40px",
         }}
       >
         <div style={{ fontSize: 64, fontWeight: 700, letterSpacing: 1 }}>
-          Aquaheaven
+          Thelittlemart
         </div>
         <div style={{ marginTop: 14, fontSize: 28, opacity: 0.9 }}>
           Discover quality bath and body essentials

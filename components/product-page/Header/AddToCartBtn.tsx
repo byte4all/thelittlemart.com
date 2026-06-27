@@ -23,7 +23,7 @@ const AddToCartBtn = ({
   return (
     <button
       type="button"
-      className="bg-gradient-to-r from-brand to-brand-accent w-full ml-3 sm:ml-5 rounded-full h-11 md:h-[52px] text-sm sm:text-base text-white hover:opacity-90 transition-all font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+      className="bg-brand w-full ml-3 sm:ml-5 rounded-full h-11 md:h-[52px] text-sm sm:text-base text-white hover:bg-brand/90 transition-all font-medium disabled:opacity-60 disabled:cursor-not-allowed"
       onClick={() =>
         dispatch(
           addToCart({

@@ -14,7 +14,7 @@ import { Review } from "@/types/review.types";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { ...buildPageMetadata({
-  title: "Aquaheaven",
+  title: "Thelittlemart",
   description:
     "Shop premium French products, including organic personal care and 100% cotton towels from Saint-Tropez, France, ideal for pools, showers, and the beach.",
   path: "/",
@@ -75,16 +75,16 @@ export default async function Home() {
   const newArrivalsData = newArrivalsRes.products.map(mapToProduct);
   const topSellingData = topSellingRes.products.map(mapToProduct);
   const organizationJsonLd = {
-    "@context": "https://schema.org",
+    "@context": "https://www.schema.org",
     "@type": "Organization",
-    name: "Aquaheaven.com.my",
+    name: "thelittlemart.com",
     url: buildCanonical("/"),
-    email: "support@aquaheaven.com.my",
+    email: "support@thelittlemart.com",
   };
   const websiteJsonLd = {
-    "@context": "https://schema.org",
+    "@context": "https://www.schema.org",
     "@type": "WebSite",
-    name: "Aquaheaven.com.my",
+    name: "thelittlemart.com",
     url: buildCanonical("/"),
     potentialAction: {
       "@type": "SearchAction",

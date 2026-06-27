@@ -46,7 +46,8 @@ export async function POST(
     let userId: string;
     if (authorName) {
       const slug = authorName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 30) || "guest";
-      const email = `reviewer-${slug}-${Date.now()}@aquaheaven.local`;
+      const email = `reviewer-${slug}-${Date.now()}@thelittlemart.local`;
+      
       const user = await prisma.user.upsert({
         where: { email },
         create: { email, name: authorName },

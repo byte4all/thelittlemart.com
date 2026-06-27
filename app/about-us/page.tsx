@@ -9,7 +9,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "About Us",
-  description: "Learn more about Aquaheaven.com.my.",
+  description: "Learn more about thelittlemart.com",
   path: "/about-us",
 });
 
@@ -21,7 +21,7 @@ export default function AboutUsPage() {
       <div className="space-y-8">
         <section
           className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 lg:gap-10 items-center"
-          aria-label="About Aquaheaven"
+          aria-label="About thelittlemart"
         >
           <div className="relative w-full aspect-[4/3] min-h-[200px] rounded-lg overflow-hidden bg-black/5">
             <Image

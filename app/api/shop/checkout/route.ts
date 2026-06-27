@@ -164,7 +164,7 @@ export async function POST(request: Request) {
     });
 
     const collectionId = process.env.BILLPLZ_COLLECTION_ID;
-    // Callback URL must be reachable by Billplz: set BILLPLZ_CALLBACK_BASE_URL in production (e.g. https://aquaheaven.com.my).
+    // Callback URL must be reachable by Billplz: set BILLPLZ_CALLBACK_BASE_URL in production (e.g. https://www.thelittlemart.com).
     // In Billplz dashboard enable "Basic Callback URL" or "X Signature Callback URL" for the collection.
     const callbackBase =
       process.env.BILLPLZ_CALLBACK_BASE_URL ||
@@ -185,7 +185,7 @@ export async function POST(request: Request) {
     const fullName =
       (shippingAddress as { fullName?: string }).fullName ||
       (dbUser?.name ?? "Customer");
-    const email = dbUser?.email ?? "noreply@aquaheaven.com.my";
+    const email = dbUser?.email ?? "noreply@thelittlemart.com";
     const mobile = (shippingAddress as { phone?: string }).phone ?? undefined;
 
     const amountSen = Math.round(Number(order.total) * 100);
@@ -201,7 +201,7 @@ export async function POST(request: Request) {
       amount: amountSen,
       email,
       name: fullName.slice(0, 100),
-      description: `Order ${order.orderNumber} - Aquaheaven`,
+      description: `Order ${order.orderNumber} - Thelittlemart`,
       callbackUrl,
       redirectUrl,
       reference1: order.id,

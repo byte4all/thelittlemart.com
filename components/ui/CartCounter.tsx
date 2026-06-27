@@ -57,7 +57,7 @@ const CartCounter = ({
         variant="ghost"
         size="icon"
         type="button"
-        className="h-5 w-5 sm:h-6 sm:w-6 text-xl text-brand hover:bg-brand/20 hover:text-brand-accent"
+        className="h-5 w-5 sm:h-6 sm:w-6 text-xl text-brand hover:bg-brand/20 hover:text-brand/80"
         onClick={() => remove()}
       >
         <FaMinus />
@@ -69,7 +69,7 @@ const CartCounter = ({
         variant="ghost"
         size="icon"
         type="button"
-        className="h-5 w-5 sm:h-6 sm:w-6 text-xl text-brand hover:bg-brand/20 hover:text-brand-accent disabled:opacity-50 disabled:pointer-events-none"
+        className="h-5 w-5 sm:h-6 sm:w-6 text-xl text-brand hover:bg-brand/20 hover:text-brand/80 disabled:opacity-50 disabled:pointer-events-none"
         onClick={() => addToCart()}
         disabled={atMax}
         aria-label={atMax ? `Maximum ${max} available` : "Increase quantity"}

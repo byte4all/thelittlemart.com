@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getBaseUrl } from "@/lib/base-url";
 
-export const SITE_NAME = "Aquaheaven.com.my";
+export const SITE_NAME = "thelittlemart.com";
 export const SITE_TAGLINE =
   "Premium French products, including organic personal care and 100% cotton towels from Saint-Tropez for pools, showers, and the beach.";
 

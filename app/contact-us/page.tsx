@@ -8,7 +8,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Contact Us",
-  description: "Get in touch with Aquaheaven.",
+  description: "Get in touch with Thelittlemart.",
   path: "/contact-us",
 });
 
@@ -36,10 +36,10 @@ export default function ContactUsPage() {
             <li>
               <span className="text-black/90 font-medium">Email:</span>{" "}
               <a
-                href="mailto:support@aquaheaven.com.my"
+                href="mailto:support@thelittlemart.com"
                 className={s.link}
               >
-                support@aquaheaven.com.my
+                support@thelittlemart.com
               </a>
             </li>
             <li>

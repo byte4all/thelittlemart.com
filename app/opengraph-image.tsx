@@ -18,15 +18,14 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          background:
-            "linear-gradient(135deg, rgba(10,18,31,1) 0%, rgba(21,42,69,1) 50%, rgba(8,67,84,1) 100%)",
+          background: "#2596be",
           color: "white",
           fontFamily: "Arial",
           padding: "40px",
         }}
       >
         <div style={{ fontSize: 72, fontWeight: 700, letterSpacing: 1 }}>
-          Aquaheaven
+          Thelittlemart
         </div>
         <div style={{ marginTop: 16, fontSize: 32, opacity: 0.9 }}>
           Premium bath essentials and luxury towels
