@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
     const tax = 0;
     const subtotalRounded = roundTo2(subtotal);
-    const shipping = subtotalRounded >= 85 ? 0 : 8;
+    const shipping = subtotalRounded >= 35 ? 0 : 8;
     const total = roundTo2(subtotalRounded + tax + shipping);
     const orderNumber = generateOrderNumber();
 

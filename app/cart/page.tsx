@@ -25,7 +25,7 @@ export default function CartPage() {
   );
   const { formatPrice } = useCurrency();
   const subtotalRounded = roundTo2(totalPrice);
-  const deliveryFee = subtotalRounded >= 85 ? 0 : 8;
+  const deliveryFee = subtotalRounded >= 35 ? 0 : 8;
   const totalRounded = roundTo2(subtotalRounded + deliveryFee);
 
   return (

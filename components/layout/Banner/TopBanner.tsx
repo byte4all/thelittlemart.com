@@ -5,7 +5,7 @@ const TopBanner = () => {
     <div className="bg-black text-white text-center py-2 px-2 sm:px-4 xl:px-0">
       <div className="max-w-frame mx-auto">
         <p className="text-xs sm:text-sm">
-          Get Free Shipping Across Kuala Lumpur for orders above 85 RM.
+          Get Free Shipping Across Kuala Lumpur for orders above 35 RM.
         </p>
       </div>
     </div>

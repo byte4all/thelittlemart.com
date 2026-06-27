@@ -20,7 +20,7 @@ export default function CheckoutPage() {
   const { cart, totalPrice, adjustedTotalPrice } = useAppSelector((state: RootState) => state.carts);
   const { formatPrice } = useCurrency();
   const subtotalRounded = roundTo2(totalPrice);
-  const deliveryFee = subtotalRounded >= 85 ? 0 : 8;
+  const deliveryFee = subtotalRounded >= 35 ? 0 : 8;
   const orderTotalRounded = roundTo2(subtotalRounded + deliveryFee);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
