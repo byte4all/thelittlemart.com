@@ -3,14 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthUser } from "@/lib/auth/client";
+import { AUTH_LOGIN_PATH } from "@/lib/auth/login-path";
 
 /**
  * User icon in navbar: links to /account (profile) when logged in,
- * /auth/sign-in when logged out. Prevents redirect to homepage when clicking profile.
+ * Default login is magic link; password is available via the auth UI toggle.
  */
 export default function UserProfileLink() {
   const user = useAuthUser();
-  const href = user ? "/account" : "/auth/sign-in";
+  const href = user ? "/account" : AUTH_LOGIN_PATH;
 
   return (
     <Link href={href} className="p-1" aria-label={user ? "Account / profile" : "Sign in"}>

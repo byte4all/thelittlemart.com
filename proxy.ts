@@ -3,8 +3,10 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/server";
 import { REDIRECT_AFTER_LOGIN_COOKIE_NAME } from "@/lib/redirect-after-login";
 
+import { AUTH_LOGIN_PATH } from "@/lib/auth/login-path";
+
 const authMiddleware = auth.middleware({
-  loginUrl: "/auth/sign-in",
+  loginUrl: AUTH_LOGIN_PATH,
 });
 
 const PROTECTED_PREFIXES = ["/admin", "/account", "/checkout"];

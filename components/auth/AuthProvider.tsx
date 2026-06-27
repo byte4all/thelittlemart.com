@@ -6,6 +6,7 @@ import { useState } from "react";
 import { NeonAuthUIProvider } from "@neondatabase/auth-ui";
 import "@neondatabase/auth-ui/css";
 import { authClient } from "@/lib/auth/client";
+import React from "react";
 
 export default function AuthProvider({
   children,
@@ -22,6 +23,7 @@ export default function AuthProvider({
       authClient={authClient}
       baseURL={baseURL}
       magicLink
+      emailOTP
       credentials
       signUp
       social={{ providers: ["google"] }}
@@ -31,6 +33,11 @@ export default function AuthProvider({
       replace={router.replace}
       onSessionChange={() => router.refresh()}
       Link={Link}
+      localization={{
+        MAGIC_LINK: "Magic link",
+        EMAIL_OTP: "Email code",
+        PASSWORD: "Password",
+      }}
     >
       {children}
     </NeonAuthUIProvider>

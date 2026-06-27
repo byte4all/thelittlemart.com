@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { UserButton } from "@neondatabase/auth-ui";
 import { useAuthUser } from "@/lib/auth/client";
+import { AUTH_LOGIN_PATH } from "@/lib/auth/login-path";
 
 /**
  * Signed-in: Neon UserButton (account menu + sign out).
@@ -31,7 +32,7 @@ export default function UserMenu() {
 
   return (
     <Link
-      href="/auth/sign-in"
+      href={AUTH_LOGIN_PATH}
       className="p-1"
       aria-label="Sign in"
     >

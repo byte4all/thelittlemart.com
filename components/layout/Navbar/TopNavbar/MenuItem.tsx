@@ -40,7 +40,7 @@ export function MenuItem({ label, url }: MenuItemProps) {
         )}
       >
         {isActive ? (
-          <span className="bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-transparent">
+          <span className="text-brand">
             {label}
           </span>
         ) : (

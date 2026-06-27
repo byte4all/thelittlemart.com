@@ -2,9 +2,7 @@ import AnimatedCounter from "@/components/ui/AnimatedCounter";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
-import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import * as motion from "framer-motion/client";
 
 const Header = () => {

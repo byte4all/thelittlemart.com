@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { roundTo2 } from "@/lib/currency";
 import { useAuthUser } from "@/lib/auth/client";
-import { setRedirectAfterLoginCookie } from "@/lib/redirect-after-login";
+import { authLoginUrl } from "@/lib/auth/login-path";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -28,8 +28,7 @@ export default function CheckoutPage() {
   React.useEffect(() => {
     if (user === undefined) return;
     if (user === null) {
-      setRedirectAfterLoginCookie("/checkout");
-      router.replace(`/auth/sign-in?redirect=${encodeURIComponent("/checkout")}`);
+      router.replace(authLoginUrl("/checkout"));
     }
   }, [user, router]);
 
@@ -120,7 +119,7 @@ export default function CheckoutPage() {
         <h2
           className={cn([
             integralCF.className,
-            "font-bold text-[32px] md:text-[40px] uppercase mb-6 text-center bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-transparent",
+            "font-bold text-[32px] md:text-[40px] uppercase mb-6 text-center text-brand",
           ])}
         >
           Checkout

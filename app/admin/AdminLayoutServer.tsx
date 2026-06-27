@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentAdminGate } from "@/lib/auth";
+import { authLoginUrl } from "@/lib/auth/login-path";
 import AdminShell from "./AdminShell";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,7 @@ export default async function AdminLayout({
     if (gate.signedIn) {
       redirect("/");
     }
-    redirect("/auth/sign-in?redirect=%2Fadmin");
+    redirect(authLoginUrl("/admin"));
   }
   return <AdminShell>{children}</AdminShell>;
 }

@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { roundTo2 } from "@/lib/currency";
 import { useAuthUser } from "@/lib/auth/client";
+import { authLoginUrl } from "@/lib/auth/login-path";
 
 export default function CartPage() {
   const user = useAuthUser();
@@ -36,7 +37,7 @@ export default function CartPage() {
             <h2
               className={cn([
                 integralCF.className,
-                "font-bold text-[32px] md:text-[40px] uppercase mb-5 md:mb-6 bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-transparent",
+                "font-bold text-[32px] md:text-[40px] uppercase mb-5 md:mb-6 text-brand",
               ])}
             >
               your cart
@@ -102,7 +103,7 @@ export default function CartPage() {
                   asChild
                 >
                   <Link
-                    href={user === null ? "/auth/sign-in?redirect=" + encodeURIComponent("/checkout") : "/checkout"}
+                    href={user === null ? authLoginUrl("/checkout") : "/checkout"}
                   >
                     Go to Checkout{" "}
                     <FaArrowRight className="text-xl ml-2 group-hover:translate-x-1 transition-all" />

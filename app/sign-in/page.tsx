@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { AUTH_LOGIN_PATH } from "@/lib/auth/login-path";
 
 export default async function SignInRedirect({
   searchParams,
@@ -12,5 +13,5 @@ export default async function SignInRedirect({
     else if (Array.isArray(value)) value.forEach((v) => query.append(key, v));
   }
   const qs = query.toString();
-  redirect(`/auth/sign-in${qs ? `?${qs}` : ""}`);
+  redirect(`${AUTH_LOGIN_PATH}${qs ? `?${qs}` : ""}`);
 }

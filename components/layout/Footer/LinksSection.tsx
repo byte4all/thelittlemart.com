@@ -1,4 +1,4 @@
-import React from "react";
+import { AUTH_LOGIN_PATH } from "@/lib/auth/login-path";
 import { FooterLinks } from "./footer.types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -35,7 +35,7 @@ const footerLinksData: FooterLinks[] = [
     id: 4,
     title: "account",
     children: [
-      { id: 41, label: "Login", url: "/auth/sign-in" },
+      { id: 41, label: "Login", url: AUTH_LOGIN_PATH },
       { id: 42, label: "Register", url: "/auth/sign-up" },
       { id: 43, label: "My Orders", url: "/account/payments" },
     ],

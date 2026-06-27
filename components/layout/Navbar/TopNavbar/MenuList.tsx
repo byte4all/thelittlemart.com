@@ -36,7 +36,7 @@ export function MenuList({ data, label }: MenuListProps) {
         )}
       >
         {isShopActive ? (
-          <span className="bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-transparent">
+          <span className="text-brand">
             {label}
           </span>
         ) : (
@@ -107,7 +107,7 @@ const ListItem = React.forwardRef<
           <div
             className={cn(
               "text-sm font-medium leading-none",
-              isActive && "bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-transparent"
+              isActive && "text-brand"
             )}
           >
             {title}

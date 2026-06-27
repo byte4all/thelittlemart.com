@@ -8,7 +8,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Customer Support",
-  description: "Get help from Aquaheaven customer support.",
+  description: "Get help from Thelittlemart customer support.",
   path: "/customer-support",
 });
 

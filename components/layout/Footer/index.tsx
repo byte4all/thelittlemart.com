@@ -74,17 +74,17 @@ const Footer = () => {
               <h1
                 className={cn([
                   integralCF.className,
-                  "text-[28px] lg:text-[32px] mb-6 bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-transparent",
+                  "text-[28px] lg:text-[32px] mb-6 text-brand",
                 ])}
               >
-                AQUAHEAVEN
+                THELITTLEMART
               </h1>
               <p className="text-black/60 text-sm mb-9">
               Quality essentials for your body and home. From luxurious soaps to Saint-Tropez inspired towels.
               </p>
               <div className="flex items-center">
                 {socialsData.map((social) => {
-                  const iconClassName = "bg-gradient-to-r from-brand to-brand-accent text-white hover:opacity-90 transition-all mr-3 w-7 h-7 rounded-full border border-brand/30 flex items-center justify-center p-1.5";
+                  const iconClassName = "bg-brand text-white hover:bg-brand/90 transition-all mr-3 w-7 h-7 rounded-full border border-brand/30 flex items-center justify-center p-1.5";
                   if (social.url) {
                     return (
                       <Link

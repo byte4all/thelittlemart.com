@@ -45,7 +45,7 @@ const ReviewCard = ({
       </div>
       <div className="flex items-center mb-2 sm:mb-3">
         <strong className="text-black sm:text-xl mr-1">{data.user}</strong>
-        <IoIosCheckmarkCircle className="text-brand-accent text-xl sm:text-2xl" />
+        <IoIosCheckmarkCircle className="text-brand text-xl sm:text-2xl" />
       </div>
       <p className="text-sm sm:text-base text-black/60">{data.content}</p>
       {isDate && (

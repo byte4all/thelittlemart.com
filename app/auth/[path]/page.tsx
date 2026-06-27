@@ -4,6 +4,7 @@ import { AuthView } from "@neondatabase/auth-ui";
 import { authViewPaths } from "@neondatabase/auth-ui/server";
 import StoreRedirectAfterLogin from "@/components/auth/StoreRedirectAfterLogin";
 import AuthCallbackComplete from "@/components/auth/AuthCallbackComplete";
+import { authViewClassNames } from "@/components/auth/authViewClassNames";
 import { noIndexMetadata } from "@/lib/seo";
 
 export const dynamicParams = false;
@@ -15,7 +16,16 @@ export function generateStaticParams() {
 const titles: Record<string, string> = {
   "sign-in": "Sign In",
   "sign-up": "Sign Up",
+  "magic-link": "Sign In",
+  "email-otp": "Sign In with Code",
 };
+
+const pathsWithLoginExtras = new Set([
+  "sign-in",
+  "sign-up",
+  "magic-link",
+  "email-otp",
+]);
 
 export async function generateMetadata({
   params,
@@ -33,8 +43,10 @@ export default async function AuthPage({
   params: Promise<{ path: string }>;
 }) {
   const { path } = await params;
-  const showExtras = path === "sign-in" || path === "sign-up";
+  const showExtras = pathsWithLoginExtras.has(path);
   const isCallback = path === "callback";
+  const isPasswordlessEntry =
+    path === "magic-link" || path === "email-otp" || path === "sign-in";
 
   return (
     <main className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-10">
@@ -43,7 +55,7 @@ export default async function AuthPage({
           <StoreRedirectAfterLogin />
         </Suspense>
       )}
-      <AuthView path={path} />
+      <AuthView path={path} classNames={authViewClassNames} />
       {isCallback && (
         <Suspense fallback={null}>
           <AuthCallbackComplete />
@@ -51,7 +63,8 @@ export default async function AuthPage({
       )}
       {showExtras && (
         <p className="text-center text-sm text-black/60 mt-4 max-w-sm">
-          When {path === "sign-in" ? "signing in" : "signing up"}, you agree to our{" "}
+          When{" "}
+          {isPasswordlessEntry ? "signing in" : "signing up"}, you agree to our{" "}
           <a href="/terms-of-service" className="underline">
             Terms
           </a>

@@ -87,10 +87,10 @@ const TopNavbar = () => {
             href="/"
             className={cn([
               integralCF.className,
-              "text-2xl lg:text-[32px] mb-2 mr-3 lg:mr-10 bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-transparent",
+              "text-2xl lg:text-[32px] mb-2 mr-3 lg:mr-10 text-brand",
             ])}
           >
-            AQUAHEAVEN
+            THELITTLEMART
           </Link>
         </div>
         <NavigationMenu className="hidden md:flex mr-2 lg:mr-7">

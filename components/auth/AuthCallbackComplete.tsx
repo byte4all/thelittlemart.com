@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
+import { AUTH_LOGIN_PATH } from "@/lib/auth/login-path";
 import {
   clearRedirectAfterLogin,
   getRedirectAfterLogin,
@@ -45,7 +46,7 @@ export default function AuthCallbackComplete() {
       }
 
       if (!cancelled) {
-        router.replace("/auth/sign-in");
+        router.replace(AUTH_LOGIN_PATH);
       }
     }
 

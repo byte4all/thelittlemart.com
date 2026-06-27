@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuthUser } from "@/lib/auth/client";
+import { authLoginUrl } from "@/lib/auth/login-path";
 import PaymentsSection from "@/components/account/PaymentsSection";
 
 export default function AccountPaymentsPage() {
@@ -12,9 +13,7 @@ export default function AccountPaymentsPage() {
   useEffect(() => {
     if (user === undefined) return;
     if (user === null) {
-      router.replace(
-        `/auth/sign-in?redirect=${encodeURIComponent("/account/payments")}`
-      );
+      router.replace(authLoginUrl("/account/payments"));
     }
   }, [user, router]);
 
