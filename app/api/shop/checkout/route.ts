@@ -4,6 +4,12 @@ import { getAuthUserAndSync } from "@/lib/auth";
 import { addContactToResend } from "@/lib/resend";
 import { createBill } from "@/lib/billplz";
 import { roundTo2 } from "@/lib/currency";
+import {
+  buildStoredFulfillmentAddress,
+  calcDeliveryFee,
+  type FulfillmentAddressInput,
+  type FulfillmentMethod,
+} from "@/lib/fulfillment";
 
 function generateOrderNumber(): string {
   return `ORD-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
@@ -38,20 +44,15 @@ export async function POST(request: Request) {
     const {
       shippingAddress,
       items: rawItems,
-      userId: bodyUserId,
+      fulfillmentMethod: rawFulfillmentMethod,
     } = body as {
-      shippingAddress: {
-        fullName?: string;
-        address?: string;
-        city?: string;
-        state?: string;
-        zip?: string;
-        country?: string;
-        phone?: string;
-      };
+      shippingAddress: FulfillmentAddressInput;
       items: { slug?: string; id?: string; quantity: number }[];
-      userId?: string;
+      fulfillmentMethod?: FulfillmentMethod;
     };
+
+    const fulfillmentMethod: FulfillmentMethod =
+      rawFulfillmentMethod === "pickup" ? "pickup" : "shipping";
 
     const dbUser = await getAuthUserAndSync(request);
     if (!dbUser) {
@@ -64,21 +65,36 @@ export async function POST(request: Request) {
 
     if (!shippingAddress || !rawItems || !Array.isArray(rawItems) || rawItems.length === 0) {
       return NextResponse.json(
-        { success: false, error: "Shipping address and items are required" },
+        { success: false, error: "Contact details and items are required" },
         { status: 400 }
       );
     }
 
-    const zipRaw = typeof shippingAddress.zip === "string" ? shippingAddress.zip : "";
-    const zipNum = parseInt(zipRaw.replace(/\D/g, "").slice(0, 5), 10);
-    if (Number.isNaN(zipNum) || zipNum < 50000 || zipNum > 60000) {
+    if (!shippingAddress.fullName?.trim() || !shippingAddress.phone?.trim()) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "We only deliver to Kuala Lumpur. Postcode must be between 50000 and 60000.",
-        },
+        { success: false, error: "Full name and phone are required" },
         { status: 400 }
       );
+    }
+
+    if (fulfillmentMethod === "shipping") {
+      if (!shippingAddress.address?.trim()) {
+        return NextResponse.json(
+          { success: false, error: "Shipping address is required" },
+          { status: 400 }
+        );
+      }
+      const zipRaw = typeof shippingAddress.zip === "string" ? shippingAddress.zip : "";
+      const zipNum = parseInt(zipRaw.replace(/\D/g, "").slice(0, 5), 10);
+      if (Number.isNaN(zipNum) || zipNum < 50000 || zipNum > 60000) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "We only deliver to Kuala Lumpur. Postcode must be between 50000 and 60000.",
+          },
+          { status: 400 }
+        );
+      }
     }
 
     const items = await resolveItems(rawItems);
@@ -129,9 +145,13 @@ export async function POST(request: Request) {
 
     const tax = 0;
     const subtotalRounded = roundTo2(subtotal);
-    const shipping = subtotalRounded >= 35 ? 0 : 8;
+    const shipping = calcDeliveryFee(subtotalRounded, fulfillmentMethod);
     const total = roundTo2(subtotalRounded + tax + shipping);
     const orderNumber = generateOrderNumber();
+    const storedAddress = buildStoredFulfillmentAddress(
+      fulfillmentMethod,
+      shippingAddress
+    );
 
     const order = await prisma.$transaction(async (tx) => {
       const newOrder = await tx.order.create({
@@ -142,7 +162,7 @@ export async function POST(request: Request) {
           total,
           tax,
           shipping,
-          shippingAddress: shippingAddress as object,
+          shippingAddress: storedAddress as object,
           paymentStatus: "PENDING",
           paymentMethod: "billplz",
           userId,

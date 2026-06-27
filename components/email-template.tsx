@@ -5,6 +5,7 @@ export type OrderConfirmationProps = {
   items: { name: string; quantity: number; price: number }[];
   total: number;
   shippingAddress?: {
+    type?: "pickup" | "shipping";
     fullName?: string;
     address?: string;
     city?: string;
@@ -67,7 +68,9 @@ export function OrderConfirmationEmail(props: OrderConfirmationProps) {
         </p>
         {address && (address.fullName || address.address) && (
           <>
-            <h3 style={{ marginTop: 24 }}>Shipping address</h3>
+            <h3 style={{ marginTop: 24 }}>
+              {address.type === "pickup" ? "Pickup location" : "Shipping address"}
+            </h3>
             <p style={{ margin: 0, color: "#374151" }}>
               {escapeHtml(address.fullName ?? "")}
               <br />

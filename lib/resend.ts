@@ -94,6 +94,7 @@ export async function addContactToResend(params: {
 
 export type OrderSummaryItem = { name: string; quantity: number; price: number };
 export type OrderSummaryAddress = {
+  type?: "pickup" | "shipping";
   fullName?: string;
   address?: string;
   city?: string;
@@ -129,7 +130,7 @@ export async function sendOrderConfirmationEmail(params: {
   ).join("");
   const addressBlock = shippingAddress && (shippingAddress.fullName || shippingAddress.address)
     ? `
-    <h3 style="margin-top:24px">Shipping address</h3>
+    <h3 style="margin-top:24px">${shippingAddress.type === "pickup" ? "Pickup location" : "Shipping address"}</h3>
     <p style="margin:0;color:#374151">
       ${escapeHtml(shippingAddress.fullName ?? "")}<br/>
       ${escapeHtml(shippingAddress.address ?? "")}<br/>

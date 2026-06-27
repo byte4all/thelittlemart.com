@@ -2,6 +2,9 @@
 
 import BreadcrumbCart from "@/components/cart-page/BreadcrumbCart";
 import ProductCard from "@/components/cart-page/ProductCard";
+import FulfillmentSelector, {
+  FulfillmentSummaryRow,
+} from "@/components/cart/FulfillmentSelector";
 import { Button } from "@/components/ui/button";
 import InputGroup from "@/components/ui/input-group";
 import { cn } from "@/lib/utils";
@@ -11,21 +14,24 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 import { TbBasketExclamation } from "react-icons/tb";
 import React from "react";
 import { RootState } from "@/lib/store";
-import { useAppSelector } from "@/lib/hooks/redux";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
+import { setFulfillmentMethod } from "@/lib/features/carts/cartsSlice";
 import Link from "next/link";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { roundTo2 } from "@/lib/currency";
+import { calcDeliveryFee } from "@/lib/fulfillment";
 import { useAuthUser } from "@/lib/auth/client";
 import { authLoginUrl } from "@/lib/auth/login-path";
 
 export default function CartPage() {
   const user = useAuthUser();
-  const { cart, totalPrice, adjustedTotalPrice } = useAppSelector(
+  const dispatch = useAppDispatch();
+  const { cart, totalPrice, fulfillmentMethod } = useAppSelector(
     (state: RootState) => state.carts
   );
   const { formatPrice } = useCurrency();
   const subtotalRounded = roundTo2(totalPrice);
-  const deliveryFee = subtotalRounded >= 35 ? 0 : 8;
+  const deliveryFee = calcDeliveryFee(subtotalRounded, fulfillmentMethod);
   const totalRounded = roundTo2(subtotalRounded + deliveryFee);
 
   return (
@@ -57,19 +63,24 @@ export default function CartPage() {
                 <h6 className="text-xl md:text-2xl font-bold text-black">
                   Order Summary
                 </h6>
+                <FulfillmentSelector
+                  method={fulfillmentMethod}
+                  onChange={(method) => dispatch(setFulfillmentMethod(method))}
+                  subtotal={subtotalRounded}
+                  formatPrice={formatPrice}
+                />
                 <div className="flex flex-col space-y-5">
                   <div className="flex items-center justify-between">
                     <span className="md:text-xl text-black/60">Subtotal</span>
-                    <span className="md:text-xl font-bold">{formatPrice(subtotalRounded)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="md:text-xl text-black/60">
-                      Shipping (3-7 days)
-                    </span>
                     <span className="md:text-xl font-bold">
-                      {deliveryFee === 0 ? "FREE SHIPPING" : formatPrice(8)}
+                      {formatPrice(subtotalRounded)}
                     </span>
                   </div>
+                  <FulfillmentSummaryRow
+                    method={fulfillmentMethod}
+                    subtotal={subtotalRounded}
+                    formatPrice={formatPrice}
+                  />
                   <hr className="border-t-black/10" />
                   <div className="flex items-center justify-between">
                     <span className="md:text-xl text-black">Total</span>
@@ -103,7 +114,9 @@ export default function CartPage() {
                   asChild
                 >
                   <Link
-                    href={user === null ? authLoginUrl("/checkout") : "/checkout"}
+                    href={
+                      user === null ? authLoginUrl("/checkout") : "/checkout"
+                    }
                   >
                     Go to Checkout{" "}
                     <FaArrowRight className="text-xl ml-2 group-hover:translate-x-1 transition-all" />

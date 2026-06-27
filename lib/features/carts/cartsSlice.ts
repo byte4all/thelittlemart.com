@@ -1,4 +1,5 @@
 import { roundTo2 } from "@/lib/currency";
+import type { FulfillmentMethod } from "@/lib/fulfillment";
 import { compareArrays } from "@/lib/utils";
 import { Discount } from "@/types/product.types";
 import { createSlice } from "@reduxjs/toolkit";
@@ -55,6 +56,7 @@ interface CartsState {
   totalPrice: number;
   adjustedTotalPrice: number;
   action: "update" | "add" | "delete" | null;
+  fulfillmentMethod: FulfillmentMethod;
 }
 
 // Define the initial state using that type
@@ -63,6 +65,7 @@ const initialState: CartsState = {
   totalPrice: 0,
   adjustedTotalPrice: 0,
   action: null,
+  fulfillmentMethod: "shipping",
 };
 
 export const cartsSlice = createSlice({
@@ -239,6 +242,12 @@ export const cartsSlice = createSlice({
       );
     },
     /** Replace cart with server state (e.g. after login). */
+    setFulfillmentMethod: (
+      state,
+      action: PayloadAction<FulfillmentMethod>
+    ) => {
+      state.fulfillmentMethod = action.payload;
+    },
     setCartFromServer: (state, action: PayloadAction<CartItem[]>) => {
       // Clamp any incoming quantities for safety so a bad server value can't explode the cart.
       const items = action.payload.map((item) => {
@@ -271,6 +280,12 @@ export const cartsSlice = createSlice({
   },
 });
 
-export const { addToCart, removeCartItem, remove, setCartFromServer } = cartsSlice.actions;
+export const {
+  addToCart,
+  removeCartItem,
+  remove,
+  setCartFromServer,
+  setFulfillmentMethod,
+} = cartsSlice.actions;
 
 export default cartsSlice.reducer;
