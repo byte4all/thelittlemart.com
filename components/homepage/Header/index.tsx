@@ -16,11 +16,10 @@ const Header = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className={cn([
-              integralCF.className,
-              "text-4xl lg:text-[64px] lg:leading-[64px] mb-5 lg:mb-8 text-white",
+              "font-bold text-3xl lg:text-[52px] lg:leading-[58px] mb-5 lg:mb-8 text-white"
             ])}
           >
-            PREMIUM BATH ESSENTIALS AND FRENCH TOWELS FOR YOUR HOME
+            FROM THE KITCHEN TO THE CLASSROOM &mdash; FRENCH QUALITY YOU CAN TRUST
           </motion.h2>
           <motion.p
             initial={{ y: "100px", opacity: 0 }}
@@ -29,7 +28,7 @@ const Header = () => {
             transition={{ delay: 0.5, duration: 0.6 }}
             className="text-white/90 text-xl leading-8 sm:text-xl sm:leading-8 lg:text-lg lg:leading-7 mb-6 lg:mb-8 max-w-[545px]"
           >
-            Explore our carefully selected collection of luxurious soaps and Saint-Tropez style towels that bring elegance to your everyday moments.
+            Carefully selected French products for your home, kitchen and everyday life.
           </motion.p>
           <motion.div
             initial={{ y: "100px", opacity: 0 }}
@@ -54,10 +53,10 @@ const Header = () => {
           >
             <div className="flex flex-col text-center md:text-left">
               <span className="font-bold text-2xl md:text-xl lg:text-3xl xl:text-[40px] xl:mb-2 text-white">
-                <AnimatedCounter from={0} to={5} />+
+                <AnimatedCounter from={0} to={8} />+
               </span>
               <span className="text-sm md:text-base xl:text-lg text-white/80 text-nowrap">
-                International Brands
+                French Brands
               </span>
             </div>
             <Separator
@@ -66,7 +65,7 @@ const Header = () => {
             />
             <div className="flex flex-col ml-0 text-center md:text-left">
               <span className="font-bold text-2xl md:text-xl lg:text-3xl xl:text-[40px] xl:mb-2 text-white">
-                <AnimatedCounter from={0} to={20} />+
+                <AnimatedCounter from={0} to={50} />+
               </span>
               <span className="text-sm md:text-base xl:text-lg text-white/80 text-nowrap">
                 High-Quality Products
@@ -78,10 +77,10 @@ const Header = () => {
             />
             <div className="flex flex-col w-full text-center sm:w-auto sm:text-left mt-0 sm:ml-0 md:ml-0">
               <span className="font-bold text-2xl md:text-xl lg:text-3xl xl:text-[40px] xl:mb-2 text-white">
-                <AnimatedCounter from={0} to={300} />+
+                <AnimatedCounter from={0} to={100} />%
               </span>
               <span className="text-sm md:text-base xl:text-lg text-white/80 text-nowrap">
-                Happy Customers
+                French Sourced
               </span>
             </div>
           </motion.div>
@@ -91,7 +90,7 @@ const Header = () => {
           whileInView={{ y: "0", opacity: 1, rotate: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 2.3, duration: 0.8 }}
-          className="relative md:px-4 min-h-[448px] md:min-h-[428px] mb-6 md:mb-0 bg-cover bg-top xl:bg-[center_top_-1.6rem] bg-no-repeat bg-[url('/products/homepage/summer-vacation-vibes.webp')] md:bg-[url('/products/homepage/summer-vacation-vibes-resized.webp')]"
+          className="relative md:px-4 min-h-[448px] md:min-h-[428px] mb-6 md:mb-0 bg-cover bg-top xl:bg-[center_top_-1.6rem] bg-no-repeat bg-[url('/products/homepage/homepage-package.webp')] md:bg-[url('/products/homepage/homepage-package.webp')]"
         >
         </motion.section>
       </div>
