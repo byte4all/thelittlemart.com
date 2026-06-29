@@ -53,7 +53,7 @@ const ProductCard = ({ data, compact = false }: ProductCardProps) => {
   const { formatPrice } = useCurrency();
   const categorySlug = data.categorySlug ?? "shop";
   const href = `/shop/${categorySlug}/${slug}`;
-  const scrollRestorePendingKey = "aquaheaven:scroll:pending";
+  const scrollRestorePendingKey = "thelittlemart:scroll:pending";
 
   const handleClick = () => {
     if (typeof window === "undefined") {

@@ -83,7 +83,7 @@ export function OrderConfirmationEmail(props: OrderConfirmationProps) {
             </p>
           </>
         )}
-        <p style={{ marginTop: 24, color: "#6b7280", fontSize: 14 }}>— Aquaheaven</p>
+        <p style={{ marginTop: 24, color: "#6b7280", fontSize: 14 }}>— thelittlemart </p>
       </body>
     </html>
   );

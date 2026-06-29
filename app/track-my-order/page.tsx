@@ -8,7 +8,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Track My Order",
-  description: "Track your Aquaheaven order status.",
+  description: "Track your thelittlemart order status.",
   path: "/track-my-order",
 });
 

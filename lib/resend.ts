@@ -4,7 +4,7 @@ const apiKey = process.env.RESEND_API_KEY;
 const resend = apiKey ? new Resend(apiKey) : null;
 
 /** From address for transactional emails. Use a verified domain in production. */
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Aquaheaven <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "thelittlemart <onboarding@resend.dev>";
 
 /**
  * Split "John Doe" into firstName "John", lastName "Doe".
@@ -160,7 +160,8 @@ export async function sendOrderConfirmationEmail(params: {
   </table>
   <p style="margin-top:16px;font-size:18px"><strong>Total: RM ${Number(total).toFixed(2)}</strong></p>
   ${addressBlock}
-  <p style="margin-top:24px;color:#6b7280;font-size:14px">— Aquaheaven</p>
+  <p style="margin-top:24px;color:#6b7280;font-size:14px">— 
+  </p>
 </body>
 </html>`;
 
@@ -168,7 +169,7 @@ export async function sendOrderConfirmationEmail(params: {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: normalizedTo,
-      subject: `Order confirmation ${orderNumber} – Aquaheaven`,
+      subject: `Order confirmation ${orderNumber} – thelittlemart`,
       html,
     });
     if (error) {

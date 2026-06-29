@@ -195,7 +195,7 @@ async function ensureReviewerUsers(): Promise<string[]> {
   const ids: string[] = [];
   for (let i = 0; i < REVIEWER_NAMES.length; i++) {
     const name = REVIEWER_NAMES[i];
-    const email = `seed-reviewer-${i + 1}@aquaheaven.local`;
+    const email = `seed-reviewer-${i + 1}@thelittlemart.local`;
     const user = await prisma.user.upsert({
       where: { email },
       create: { email, name },

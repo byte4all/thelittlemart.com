@@ -7,7 +7,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Terms Of Service",
-  description: "Terms of service for Aquaheaven.com.my",
+  description: "Terms of service for thelittlemart.com",
   path: "/terms-of-service",
 });
 

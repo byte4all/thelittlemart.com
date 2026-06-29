@@ -6,7 +6,7 @@ import TopBanner from './Banner/TopBanner'
 import TopNavbar from './Navbar/TopNavbar'
 import Footer from './Footer'
 
-const SCROLL_RESTORE_PENDING_KEY = "aquaheaven:scroll:pending";
+const SCROLL_RESTORE_PENDING_KEY = "thelittlemart:scroll:pending";
 
 export default function ConditionalLayout({
   children,

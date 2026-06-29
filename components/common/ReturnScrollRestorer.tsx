@@ -3,8 +3,8 @@
 import { useLayoutEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-const SCROLL_RESTORE_PENDING_KEY = "aquaheaven:scroll:pending";
-const SCROLL_RESTORE_PREFIX = "aquaheaven:scroll:";
+const SCROLL_RESTORE_PENDING_KEY = "thelittlemart:scroll:pending";
+const SCROLL_RESTORE_PREFIX = "thelittlemart:scroll:";
 
 export function getScrollStorageKey(path: string): string {
   return `${SCROLL_RESTORE_PREFIX}${path}`;

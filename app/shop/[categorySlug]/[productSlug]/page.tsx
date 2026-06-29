@@ -40,7 +40,7 @@ export async function generateMetadata({
   const canonicalPath = `/shop/${canonicalCategorySlug}/${product.slug}`;
   const description =
     product.description?.trim() ||
-    `Shop ${product.name} at Aquaheaven.com.my.`;
+    `Shop ${product.name} at thelittlemart.com`;
   const primaryImage = product.thumbnail || product.images?.[0];
 
   return {
@@ -111,7 +111,7 @@ export default async function CategoryProductPage({
     name: productRow.name,
     description:
       productRow.description?.trim() ||
-      `Shop ${productRow.name} at Aquaheaven.com.my.`,
+      `Shop ${productRow.name} at thelittlemart.com`,
     sku: productRow.sku ?? undefined,
     image: primaryImage ? [toAbsoluteUrl(primaryImage)] : undefined,
     brand: productRow.brand?.name

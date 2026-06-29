@@ -8,7 +8,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "FAQ",
-  description: "Frequently asked questions about Aquaheaven.",
+  description: "Frequently asked questions about thelittlemart.",
   path: "/faq",
 });
 
@@ -19,10 +19,10 @@ export default function FAQPage() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "What is Aquaheaven?",
+        name: "What is thelittlemart?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Aquaheaven offers quality essentials for your body and home, from luxurious soaps to Saint-Tropez inspired towels. We focus on comfort, quality, and timeless style.",
+          text: "thelittlemart offers quality essentials for your body and home, from luxurious soaps to Saint-Tropez inspired towels. We focus on comfort, quality, and timeless style.",
         },
       },
       {
@@ -129,9 +129,9 @@ export default function FAQPage() {
           <h2 className={s.h2}>General FAQ</h2>
           <div className="space-y-6">
             <div>
-              <h3 className={s.h3}>What is Aquaheaven?</h3>
+              <h3 className={s.h3}>What is thelittlemart?</h3>
               <p className={s.p}>
-                Aquaheaven offers quality essentials for your body and home, from
+                thelittlemart offers quality essentials for your body and home, from
                 luxurious soaps to Saint-Tropez inspired towels. We focus on
                 comfort, quality, and timeless style.
               </p>

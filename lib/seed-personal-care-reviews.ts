@@ -349,7 +349,7 @@ async function getOrCreateSeedUsers(count: number): Promise<string[]> {
 
   const toCreate = count - ids.length;
   for (let i = 0; i < toCreate; i++) {
-    const email = `reviewer-personal-care-${Date.now()}-${i}@aquaheaven.local`;
+    const email = `reviewer-personal-care-${Date.now()}-${i}@thelittlemart.local`;
     const name = `Customer ${i + 1}`;
     const user = await prisma.user.upsert({
       where: { email },

@@ -7,7 +7,7 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Privacy Policy",
-  description: "Privacy policy for Aquaheaven.com.my",
+  description: "Privacy policy for Thelittlemart.com",
   path: "/privacy-policy",
 });
 

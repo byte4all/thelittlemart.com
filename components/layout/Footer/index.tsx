@@ -12,26 +12,21 @@ import LayoutSpacing from "./LayoutSpacing";
 const socialsData: SocialNetworks[] = [
   {
     id: 1,
-    label: "Follow Aquaheaven on Facebook",
+    label: "Follow thelittlemart on Facebook",
     icon: <FaFacebookF />,
-    url: "https://facebook.com/Aquaheavenmy",
+    url: "https://facebook.com/TheLittleMartKL/",
   },
   {
     id: 2,
-    label: "Follow Aquaheaven on Instagram",
+    label: "Follow thelittlemart on Instagram",
     icon: <FaInstagram />,
-    url: "https://instagram.com/aquaheavenmy",
+    url: "https://instagram.com/thelittlemartkl",
   },
   {
     id: 3,
-    label: "View Aquaheaven source code on GitHub",
+    label: "View thelittlemart source code on GitHub",
     icon: <FaGithub />,
-    url: "https://github.com/BYTE4ALL-Organization/aquaheaven.com.my",
-  },
-  {
-    id: 4,
-    label: "Follow Aquaheaven on Twitter",
-    icon: <FaTwitter />,
+    url: "https://github.com/byte4all/thelittlemart.com",
   },
 ];
 
@@ -123,7 +118,7 @@ const Footer = () => {
           <hr className="h-[1px] border-t-black/10 mb-6" />
           <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center mb-2">
             <p className="text-sm text-center sm:text-left text-black/60 mb-4 sm:mb-0 sm:mr-1">
-              Aquaheaven.com.my © Forked from{" "}
+              thelittlemart.com © Forked from{" "}
               <Link
                 href="https://github.com/mohammadoftadeh/next-ecommerce-shopco"
                 className="text-black font-medium"
@@ -144,7 +139,7 @@ const Footer = () => {
                 <FaGithub className="w-4 h-4" />
               </Link>
               <Link
-                href="https://github.com/BYTE4ALL-Organization/aquaheaven.com.my"
+                href="https://github.com/byte4all/thelittlemart.com"
                 className="text-black font-medium"
                 target="_blank"
                 rel="noopener noreferrer"
