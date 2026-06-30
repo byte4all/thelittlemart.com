@@ -24,15 +24,15 @@
 
 @layer base {
   :root {
-    --brand: #2596be;
-    --brand-accent: #2596be;
+    --brand: #1e96b4;
+    --brand-accent: #1e96b4;
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    /* Matches --brand (#2596be); use text-primary / bg-primary / border-primary in UI */
+    /* Matches --brand (#1e96b4); use text-primary / bg-primary / border-primary in UI */
     --primary: 197 67% 45%;
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96.1%;

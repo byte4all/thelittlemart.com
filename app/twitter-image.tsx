@@ -18,7 +18,7 @@ export default function TwitterImage() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          background: "#2596be",
+          background: "var(--brand)",
           color: "white",
           fontFamily: "Arial",
           padding: "40px",

@@ -24,6 +24,71 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/** Plain HTML for SMTP (avoids react-dom/server in Next.js bundles). */
+export function orderConfirmationEmailHtml(props: OrderConfirmationProps): string {
+  const { orderNumber, items, total, shippingAddress: address } = props;
+  const lines = items
+    .map(
+      (i) =>
+        `<tr><td style="padding:8px 0">${escapeHtml(i.name)}</td><td style="padding:8px 0">${i.quantity}</td><td style="padding:8px 0">RM ${Number(i.price).toFixed(2)}</td><td style="padding:8px 0">RM ${(i.quantity * Number(i.price)).toFixed(2)}</td></tr>`
+    )
+    .join("");
+  const addressBlock =
+    address && (address.fullName || address.address)
+      ? `<h3 style="margin-top:24px">${address.type === "pickup" ? "Pickup location" : "Shipping address"}</h3>
+    <p style="margin:0;color:#374151">
+      ${escapeHtml(address.fullName ?? "")}<br/>
+      ${escapeHtml(address.address ?? "")}<br/>
+      ${[address.city, address.state, address.zip].filter(Boolean).join(", ")}<br/>
+      ${escapeHtml(address.country ?? "")}
+      ${address.phone ? `<br/>${escapeHtml(address.phone)}` : ""}
+    </p>`
+      : "";
+
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><title>Order ${escapeHtml(orderNumber)}</title></head>
+<body style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#111">
+  <h2 style="margin:0 0 16px">Thank you for your order</h2>
+  <p>Your payment has been received. Order reference: <strong>${escapeHtml(orderNumber)}</strong></p>
+  <table style="width:100%;border-collapse:collapse;margin-top:16px">
+    <thead><tr style="border-bottom:2px solid #e5e7eb;text-align:left">
+      <th style="padding:8px 0">Item</th><th style="padding:8px 0">Qty</th>
+      <th style="padding:8px 0">Unit price</th><th style="padding:8px 0">Subtotal</th>
+    </tr></thead><tbody>${lines}</tbody></table>
+  <p style="margin-top:16px;font-size:18px"><strong>Total: RM ${Number(total).toFixed(2)}</strong></p>
+  ${addressBlock}
+  <p style="margin-top:24px;color:#6b7280;font-size:14px">— thelittlemart</p>
+</body></html>`;
+}
+
+export function paymentFailedEmailHtml(props: PaymentFailedProps): string {
+  const { orderNumber, total, shopUrl, supportUrl } = props;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><title>Payment not received – ${escapeHtml(orderNumber)}</title></head>
+<body style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#111">
+  <h2 style="margin:0 0 16px">Payment not received</h2>
+  <p>We could not confirm payment for order <strong>${escapeHtml(orderNumber)}</strong> (RM ${Number(total).toFixed(2)}).</p>
+  <p style="color:#374151">Your order was not completed. You can place a new order or contact us if you believe payment was made.</p>
+  <p style="margin-top:16px">
+    <a href="${escapeHtml(shopUrl)}" style="color:#2563eb">Continue shopping</a> ·
+    <a href="${escapeHtml(supportUrl)}" style="color:#2563eb">Customer support</a>
+  </p>
+  <p style="margin-top:24px;color:#6b7280;font-size:14px">— thelittlemart</p>
+</body></html>`;
+}
+
+export function pickupReminderEmailHtml(props: PickupReminderProps): string {
+  const { orderNumber, pickupAtLabel, locationName, locationAddress, mapsUrl } = props;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><title>Pickup reminder – ${escapeHtml(orderNumber)}</title></head>
+<body style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#111">
+  <h2 style="margin:0 0 16px">Pickup reminder</h2>
+  <p>Order reference: <strong>${escapeHtml(orderNumber)}</strong></p>
+  <p>Scheduled pickup: <strong>${escapeHtml(pickupAtLabel)}</strong></p>
+  <h3 style="margin-top:24px">Pickup location</h3>
+  <p style="margin:0;color:#374151"><strong>${escapeHtml(locationName)}</strong><br/>${escapeHtml(locationAddress)}</p>
+  <p style="margin-top:16px"><a href="${escapeHtml(mapsUrl)}" style="color:#2563eb">Open in Google Maps</a></p>
+  <p style="margin-top:24px;color:#6b7280;font-size:14px">— thelittlemart</p>
+</body></html>`;
+}
+
 /**
  * Order confirmation email template for Resend (react option).
  * Used when payment is successful (Billplz callback) via POST /api/send.

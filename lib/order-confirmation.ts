@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { sendOrderConfirmationEmail } from "@/lib/resend";
+import { sendOrderConfirmationEmail } from "@/lib/order-mail";
 import {
+  acquireNotificationSendLock,
   hasSuccessfulAutoSend,
   logOrderNotification,
+  releaseNotificationSendLock,
 } from "@/lib/notification-log";
 
 type OrderWithDetails = {
@@ -83,13 +85,20 @@ export async function sendOrderConfirmationForOrderData(
 ): Promise<{ ok: boolean; error?: string; emailSent?: boolean }> {
   const trigger = opts?.trigger ?? "AUTO";
 
+  let lockHeld = false;
   if (trigger === "AUTO" && !opts?.force) {
+    lockHeld = await acquireNotificationSendLock(order.id, "ORDER_CONFIRMATION");
+    if (!lockHeld) {
+      return { ok: true, emailSent: false };
+    }
     const alreadySent = await hasSuccessfulAutoSend(order.id, "ORDER_CONFIRMATION");
     if (alreadySent) {
+      await releaseNotificationSendLock(order.id, "ORDER_CONFIRMATION");
       return { ok: true, emailSent: false };
     }
   }
 
+  try {
   const customerEmail = order.user?.email?.trim().toLowerCase();
   if (!customerEmail || customerEmail.endsWith("@user.local")) {
     await logOrderNotification({
@@ -147,4 +156,9 @@ export async function sendOrderConfirmationForOrderData(
   });
 
   return { ok: true, emailSent: true };
+  } finally {
+    if (lockHeld) {
+      await releaseNotificationSendLock(order.id, "ORDER_CONFIRMATION");
+    }
+  }
 }

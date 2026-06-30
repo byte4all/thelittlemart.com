@@ -3,6 +3,7 @@ import type {
   OrderNotificationTrigger,
   OrderNotificationType,
 } from "@prisma/client";
+import { createHash } from "crypto";
 import { prisma } from "@/lib/prisma";
 
 export const NOTIFICATION_TYPES: OrderNotificationType[] = [
@@ -71,6 +72,31 @@ export async function hasSuccessfulAutoSend(
     },
   });
   return Boolean(row);
+}
+
+function notificationLockKeys(orderId: string, type: string): [number, number] {
+  const hash = createHash("sha256").update(`${orderId}:${type}`).digest();
+  return [hash.readInt32BE(0), hash.readInt32BE(4)];
+}
+
+/** Prevent parallel AUTO sends (e.g. webhook + sync-payment) from hitting rate limits. */
+export async function acquireNotificationSendLock(
+  orderId: string,
+  type: OrderNotificationType
+): Promise<boolean> {
+  const [k1, k2] = notificationLockKeys(orderId, type);
+  const rows = await prisma.$queryRaw<{ acquired: boolean }[]>`
+    SELECT pg_try_advisory_lock(${k1}, ${k2}) AS acquired
+  `;
+  return rows[0]?.acquired === true;
+}
+
+export async function releaseNotificationSendLock(
+  orderId: string,
+  type: OrderNotificationType
+): Promise<void> {
+  const [k1, k2] = notificationLockKeys(orderId, type);
+  await prisma.$executeRaw`SELECT pg_advisory_unlock(${k1}, ${k2})`;
 }
 
 export async function getNotificationSummaryForOrder(

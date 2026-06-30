@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getBill } from "@/lib/billplz";
 import { markOrderPaidAndSendEmail, sendOrderConfirmationForOrderData } from "@/lib/order-confirmation";
 import { markOrderFailedAndNotify } from "@/lib/order-notifications";
+import { hasSuccessfulAutoSend } from "@/lib/notification-log";
 import { getAuthUserAndSync } from "@/lib/auth";
 
 /**
@@ -44,9 +45,18 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Order already marked paid (e.g. by webhook). Still send confirmation email
-    // in case webhook didn't send it or email failed, so user gets it on success page.
+    // Order already marked paid (e.g. by webhook). Only retry email if not sent yet.
     if (order.status === "CONFIRMED" && order.paymentStatus === "COMPLETED") {
+      const alreadySent = await hasSuccessfulAutoSend(order.id, "ORDER_CONFIRMATION");
+      if (alreadySent) {
+        return NextResponse.json({
+          success: true,
+          paid: true,
+          alreadySynced: true,
+          emailSent: false,
+        });
+      }
+
       const emailResult = await sendOrderConfirmationForOrderData(order, {
         trigger: "AUTO",
       });

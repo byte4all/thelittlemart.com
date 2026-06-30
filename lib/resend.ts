@@ -1,10 +1,5 @@
 import { Resend } from "resend";
-import {
-  PaymentFailedEmail,
-  PickupReminderEmail,
-  ShippingNotificationEmail,
-} from "@/components/email-template";
-import { getBaseUrl } from "@/lib/base-url";
+import { ShippingNotificationEmail } from "@/components/email-template";
 
 const apiKey = process.env.RESEND_API_KEY;
 const resend = apiKey ? new Resend(apiKey) : null;
@@ -12,9 +7,9 @@ const resend = apiKey ? new Resend(apiKey) : null;
 const DEFAULT_FROM = "thelittlemart <onboarding@resend.dev>";
 
 /**
- * Order / transactional emails (confirmation, tracking, payment failed, pickup).
- * Prefer RESEND_TRANSACTIONAL_FROM e.g. "thelittlemart <noreply@yourdomain.com>".
- * Falls back to RESEND_FROM_EMAIL, then Resend sandbox default.
+ * Order / transactional emails via Resend.
+ * Order confirmation, payment failed, and pickup reminders use SMTP — see lib/order-mail.ts.
+ * Shipping/tracking notifications stay on Resend.
  */
 export function getTransactionalFromEmail(): string {
   return (
@@ -149,85 +144,6 @@ export type OrderSummaryAddress = {
   phone?: string;
 };
 
-/**
- * Send order confirmation email (order summary) to the customer.
- * Uses Resend's send API – works with "send only" API keys.
- */
-export async function sendOrderConfirmationEmail(params: {
-  to: string;
-  orderNumber: string;
-  items: OrderSummaryItem[];
-  total: number;
-  shippingAddress?: OrderSummaryAddress | null;
-}): Promise<{ ok: boolean; error?: string }> {
-  if (!resend) {
-    if (process.env.NODE_ENV !== "test") {
-      console.warn("Resend: order confirmation not sent (RESEND_API_KEY not set). Set RESEND_API_KEY and RESEND_TRANSACTIONAL_FROM (or RESEND_FROM_EMAIL) to send emails.");
-    }
-    return { ok: true };
-  }
-  const { to, orderNumber, items, total, shippingAddress } = params;
-  const normalizedTo = to?.trim().toLowerCase();
-  if (!normalizedTo || normalizedTo.endsWith("@user.local")) return { ok: true };
-
-  const lines = items.map(
-    (i) => `<tr><td>${escapeHtml(i.name)}</td><td>${i.quantity}</td><td>RM ${Number(i.price).toFixed(2)}</td><td>RM ${(i.quantity * Number(i.price)).toFixed(2)}</td></tr>`
-  ).join("");
-  const addressBlock = shippingAddress && (shippingAddress.fullName || shippingAddress.address)
-    ? `
-    <h3 style="margin-top:24px">${shippingAddress.type === "pickup" ? "Pickup location" : "Shipping address"}</h3>
-    <p style="margin:0;color:#374151">
-      ${escapeHtml(shippingAddress.fullName ?? "")}<br/>
-      ${escapeHtml(shippingAddress.address ?? "")}<br/>
-      ${[shippingAddress.city, shippingAddress.state, shippingAddress.zip].filter(Boolean).join(", ")}<br/>
-      ${escapeHtml(shippingAddress.country ?? "")}
-      ${shippingAddress.phone ? `<br/>${escapeHtml(shippingAddress.phone)}` : ""}
-    </p>`
-    : "";
-
-  const html = `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>Order ${escapeHtml(orderNumber)}</title></head>
-<body style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#111">
-  <h2 style="margin:0 0 16px">Thank you for your order</h2>
-  <p>Your payment has been received. Order reference: <strong>${escapeHtml(orderNumber)}</strong></p>
-  <table style="width:100%;border-collapse:collapse;margin-top:16px">
-    <thead>
-      <tr style="border-bottom:2px solid #e5e7eb;text-align:left">
-        <th style="padding:8px 0">Item</th>
-        <th style="padding:8px 0">Qty</th>
-        <th style="padding:8px 0">Unit price</th>
-        <th style="padding:8px 0">Subtotal</th>
-      </tr>
-    </thead>
-    <tbody>${lines}</tbody>
-  </table>
-  <p style="margin-top:16px;font-size:18px"><strong>Total: RM ${Number(total).toFixed(2)}</strong></p>
-  ${addressBlock}
-  <p style="margin-top:24px;color:#6b7280;font-size:14px">— 
-  </p>
-</body>
-</html>`;
-
-  try {
-    const { data, error } = await resend.emails.send({
-      ...transactionalSendFields(),
-      to: normalizedTo,
-      subject: `Order confirmation ${orderNumber} – thelittlemart`,
-      html,
-    });
-    if (error) {
-      console.error("Resend order confirmation error:", error);
-      return { ok: false, error: error.message };
-    }
-    return { ok: true };
-  } catch (err) {
-    console.error("Resend order confirmation exception:", err);
-    return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };
-  }
-}
-
 export async function sendShippingNotificationEmail(params: {
   to: string;
   orderNumber: string;
@@ -270,92 +186,6 @@ export async function sendShippingNotificationEmail(params: {
   }
 }
 
-export async function sendPaymentFailedEmail(params: {
-  to: string;
-  orderNumber: string;
-  total: number;
-}): Promise<{ ok: boolean; error?: string }> {
-  if (!resend) {
-    if (process.env.NODE_ENV !== "test") {
-      console.warn("Resend: payment failed email not sent (RESEND_API_KEY not set).");
-    }
-    return { ok: true };
-  }
-  const normalizedTo = params.to?.trim().toLowerCase();
-  if (!normalizedTo || normalizedTo.endsWith("@user.local")) return { ok: true };
-
-  const baseUrl = getBaseUrl();
-
-  try {
-    const { error } = await resend.emails.send({
-      ...transactionalSendFields(),
-      to: normalizedTo,
-      subject: `Payment not received – order ${params.orderNumber} – thelittlemart`,
-      react: PaymentFailedEmail({
-        orderNumber: params.orderNumber,
-        total: params.total,
-        shopUrl: `${baseUrl}/shop`,
-        supportUrl: `${baseUrl}/customer-support`,
-      }),
-    });
-    if (error) {
-      console.error("Resend payment failed email error:", error);
-      return { ok: false, error: error.message };
-    }
-    return { ok: true };
-  } catch (err) {
-    console.error("Resend payment failed email exception:", err);
-    return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };
-  }
-}
-
-export async function sendPickupReminderEmail(params: {
-  to: string;
-  orderNumber: string;
-  pickupAt: Date;
-  locationName: string;
-  locationAddress: string;
-  mapsUrl: string;
-}): Promise<{ ok: boolean; error?: string }> {
-  if (!resend) {
-    if (process.env.NODE_ENV !== "test") {
-      console.warn("Resend: pickup reminder not sent (RESEND_API_KEY not set).");
-    }
-    return { ok: true };
-  }
-  const normalizedTo = params.to?.trim().toLowerCase();
-  if (!normalizedTo || normalizedTo.endsWith("@user.local")) return { ok: true };
-
-  const pickupAtLabel = params.pickupAt.toLocaleString("en-MY", {
-    timeZone: "Asia/Kuala_Lumpur",
-    dateStyle: "full",
-    timeStyle: "short",
-  });
-
-  try {
-    const { error } = await resend.emails.send({
-      ...transactionalSendFields(),
-      to: normalizedTo,
-      subject: `Pickup reminder – order ${params.orderNumber} – thelittlemart`,
-      react: PickupReminderEmail({
-        orderNumber: params.orderNumber,
-        pickupAtLabel,
-        locationName: params.locationName,
-        locationAddress: params.locationAddress,
-        mapsUrl: params.mapsUrl,
-      }),
-    });
-    if (error) {
-      console.error("Resend pickup reminder error:", error);
-      return { ok: false, error: error.message };
-    }
-    return { ok: true };
-  } catch (err) {
-    console.error("Resend pickup reminder exception:", err);
-    return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };
-  }
-}
-
 /**
  * Send a marketing email (newsletter, promo). Uses RESEND_MARKETING_FROM.
  * Newsletter signup itself only adds contacts; use this when sending from the app.
@@ -394,12 +224,4 @@ export async function sendMarketingEmail(params: {
     console.error("Resend marketing email exception:", err);
     return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };
   }
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

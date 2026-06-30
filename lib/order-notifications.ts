@@ -14,8 +14,8 @@ import { sendOrderConfirmationForOrderData } from "@/lib/order-confirmation";
 import {
   sendPaymentFailedEmail,
   sendPickupReminderEmail,
-  sendShippingNotificationEmail,
-} from "@/lib/resend";
+} from "@/lib/order-mail";
+import { sendShippingNotificationEmail } from "@/lib/resend";
 
 import {
   addCalendarDays,

@@ -14,19 +14,19 @@ const socialsData: SocialNetworks[] = [
     id: 1,
     label: "Follow thelittlemart on Facebook",
     icon: <FaFacebookF />,
-    url: "https://facebook.com/TheLittleMartKL/",
+    url: "https://www.facebook.com/TheLittleMartKL/",
   },
   {
     id: 2,
     label: "Follow thelittlemart on Instagram",
     icon: <FaInstagram />,
-    url: "https://instagram.com/thelittlemartkl",
+    url: "https://www.instagram.com/thelittlemartkl",
   },
   {
     id: 3,
     label: "View thelittlemart source code on GitHub",
     icon: <FaGithub />,
-    url: "https://github.com/byte4all/thelittlemart.com",
+    url: "https://www.github.com/byte4all/thelittlemart.com",
   },
 ];
 
