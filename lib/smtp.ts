@@ -47,10 +47,26 @@ export function getOrderMailReplyTo(): string | undefined {
   return value || undefined;
 }
 
+export function getOrderNotifyEmails(): string[] {
+  const raw = process.env.ORDER_NOTIFY_EMAIL?.trim();
+  if (!raw) return [];
+  return raw
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export function getOrderNotifyBccForRecipient(to: string): string[] | undefined {
+  const normalizedTo = to?.trim().toLowerCase();
+  const notify = getOrderNotifyEmails().filter((e) => e !== normalizedTo);
+  return notify.length > 0 ? notify : undefined;
+}
+
 export async function sendSmtpEmail(params: {
   to: string;
   subject: string;
   html: string;
+  bcc?: string | string[];
 }): Promise<{ ok: boolean; error?: string }> {
   if (!isSmtpConfigured()) {
     return { ok: false, error: "SMTP is not configured (SMTP_HOST, SMTP_USER, SMTP_PASS)" };
@@ -63,12 +79,16 @@ export async function sendSmtpEmail(params: {
 
   try {
     const replyTo = getOrderMailReplyTo();
+    const bcc = Array.isArray(params.bcc)
+      ? params.bcc.map((e) => e.trim().toLowerCase()).filter(Boolean)
+      : params.bcc?.trim().toLowerCase();
     await getTransporter().sendMail({
       from: getOrderMailFrom(),
       to: normalizedTo,
       subject: params.subject,
       html: params.html,
       ...(replyTo ? { replyTo } : {}),
+      ...(bcc && (Array.isArray(bcc) ? bcc.length > 0 : true) ? { bcc } : {}),
     });
     return { ok: true };
   } catch (err) {

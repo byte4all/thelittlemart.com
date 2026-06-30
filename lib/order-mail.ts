@@ -5,7 +5,11 @@ import {
   type OrderConfirmationProps,
 } from "@/components/email-template";
 import { getBaseUrl } from "@/lib/base-url";
-import { isSmtpConfigured, sendSmtpEmail } from "@/lib/smtp";
+import {
+  getOrderNotifyBccForRecipient,
+  isSmtpConfigured,
+  sendSmtpEmail,
+} from "@/lib/smtp";
 import type { OrderSummaryAddress, OrderSummaryItem } from "@/lib/resend";
 
 export type { OrderSummaryAddress, OrderSummaryItem };
@@ -42,6 +46,7 @@ export async function sendOrderConfirmationEmail(params: {
     to: params.to,
     subject: `Order confirmation ${params.orderNumber} – thelittlemart`,
     html: orderConfirmationEmailHtml(props),
+    bcc: getOrderNotifyBccForRecipient(params.to),
   });
 }
 
@@ -65,6 +70,7 @@ export async function sendPaymentFailedEmail(params: {
       shopUrl: `${baseUrl}/shop`,
       supportUrl: `${baseUrl}/customer-support`,
     }),
+    bcc: getOrderNotifyBccForRecipient(params.to),
   });
 }
 
@@ -96,5 +102,6 @@ export async function sendPickupReminderEmail(params: {
       locationAddress: params.locationAddress,
       mapsUrl: params.mapsUrl,
     }),
+    bcc: getOrderNotifyBccForRecipient(params.to),
   });
 }
