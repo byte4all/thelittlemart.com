@@ -52,6 +52,8 @@ export async function POST(
         return NextResponse.json({
           success: true,
           paid: true,
+          paymentStatus: "COMPLETED",
+          orderNumber: order.orderNumber,
           alreadySynced: true,
           emailSent: false,
         });
@@ -66,6 +68,8 @@ export async function POST(
       return NextResponse.json({
         success: true,
         paid: true,
+        paymentStatus: "COMPLETED",
+        orderNumber: order.orderNumber,
         alreadySynced: true,
         emailSent: emailResult.emailSent ?? false,
       });
@@ -73,7 +77,13 @@ export async function POST(
 
     if (!order.billplzBillId?.trim()) {
       return NextResponse.json(
-        { success: false, paid: false, error: "No payment bill linked" },
+        {
+          success: false,
+          paid: false,
+          paymentStatus: order.paymentStatus,
+          orderNumber: order.orderNumber,
+          error: "No payment bill linked",
+        },
         { status: 400 }
       );
     }
@@ -81,7 +91,13 @@ export async function POST(
     const bill = await getBill(order.billplzBillId);
     if (!bill) {
       return NextResponse.json(
-        { success: false, paid: false, error: "Could not fetch bill status" },
+        {
+          success: false,
+          paid: false,
+          paymentStatus: order.paymentStatus,
+          orderNumber: order.orderNumber,
+          error: "Could not fetch bill status",
+        },
         { status: 502 }
       );
     }
@@ -101,10 +117,17 @@ export async function POST(
           success: true,
           paid: false,
           paymentFailed: true,
+          paymentStatus: "FAILED",
+          orderNumber: order.orderNumber,
           emailSent: failedResult.emailSent ?? false,
         });
       }
-      return NextResponse.json({ success: true, paid: false });
+      return NextResponse.json({
+        success: true,
+        paid: false,
+        paymentStatus: "PENDING",
+        orderNumber: order.orderNumber,
+      });
     }
 
     const result = await markOrderPaidAndSendEmail(order, {
@@ -114,7 +137,14 @@ export async function POST(
     if (!result.ok) {
       console.error("sync-payment: markOrderPaidAndSendEmail failed", result.error);
       return NextResponse.json(
-        { success: true, paid: true, emailSent: false, error: result.error },
+        {
+          success: true,
+          paid: true,
+          paymentStatus: "COMPLETED",
+          orderNumber: order.orderNumber,
+          emailSent: false,
+          error: result.error,
+        },
         { status: 200 }
       );
     }
@@ -122,6 +152,8 @@ export async function POST(
     return NextResponse.json({
       success: true,
       paid: true,
+      paymentStatus: "COMPLETED",
+      orderNumber: order.orderNumber,
       emailSent: result.emailSent ?? false,
     });
   } catch (err) {

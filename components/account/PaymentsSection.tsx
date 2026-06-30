@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type OrderItem = {
   productName: string;
@@ -104,8 +105,12 @@ export default function PaymentsSection() {
       <ul className="divide-y divide-[var(--stack-border-color,#e5e7eb)]">
         {orders.map((order) => (
           <li key={order.id} className="py-4 first:pt-0">
+            <Link
+              href={`/account/orders/${order.id}`}
+              className="block hover:opacity-90 transition-opacity"
+            >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <span className="font-medium">{order.orderNumber}</span>
+              <span className="font-medium text-blue-600">{order.orderNumber}</span>
               <span className="text-sm text-[var(--stack-muted-color,#6b7280)]">
                 {new Date(order.createdAt).toLocaleDateString(undefined, {
                   dateStyle: "medium",
@@ -175,6 +180,7 @@ export default function PaymentsSection() {
                 Scheduled pickup: {formatPickupTime(order.pickupScheduledAt)}
               </p>
             )}
+            </Link>
           </li>
         ))}
       </ul>

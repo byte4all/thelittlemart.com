@@ -1,28 +1,37 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { integralCF } from "@/styles/fonts";
 import { cn } from "@/lib/utils";
 
+type SyncResponse = {
+  success?: boolean;
+  paid?: boolean;
+  paymentFailed?: boolean;
+  paymentStatus?: string;
+  orderNumber?: string;
+  error?: string;
+};
+
 /**
  * When the user lands here after paying on Billplz (redirect_url), we sync
  * payment status with Billplz in case the webhook did not fire. That updates
- * the order to CONFIRMED and sends the confirmation email.
+ * the order to CONFIRMED and sends the confirmation email, then redirects.
  */
 export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const orderId = searchParams.get("order");
   const [syncing, setSyncing] = useState(!!orderId);
-  const [paid, setPaid] = useState<boolean | null>(null);
+  const [redirecting, setRedirecting] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!orderId?.trim()) {
       setSyncing(false);
-      setPaid(null);
       return;
     }
     let cancelled = false;
@@ -32,24 +41,31 @@ export default function CheckoutSuccessPage() {
           method: "POST",
           credentials: "include",
         });
-        const data = (await res.json().catch(() => ({}))) as {
-          success?: boolean;
-          paid?: boolean;
-          error?: string;
-        };
-        if (!cancelled) {
-          if (!res.ok) {
-            setPaid(null);
-            setSyncError(data?.error || "Could not confirm payment yet.");
-          } else {
-            setPaid(typeof data?.paid === "boolean" ? data.paid : null);
-            setSyncError(data?.error || null);
-          }
+        const data = (await res.json().catch(() => ({}))) as SyncResponse;
+        if (cancelled) return;
+
+        if (!res.ok) {
+          setSyncError(data?.error || "Could not confirm payment yet.");
           setSyncing(false);
+          return;
         }
+
+        if (data.paid === true) {
+          setRedirecting(true);
+          router.replace(`/account/orders/${encodeURIComponent(orderId)}?paid=1`);
+          return;
+        }
+
+        if (data.paid === false) {
+          setRedirecting(true);
+          router.replace("/cart?checkout=pending");
+          return;
+        }
+
+        setSyncError("Could not confirm payment yet.");
+        setSyncing(false);
       } catch {
         if (!cancelled) {
-          setPaid(null);
           setSyncError("Could not confirm payment yet.");
           setSyncing(false);
         }
@@ -58,51 +74,58 @@ export default function CheckoutSuccessPage() {
     return () => {
       cancelled = true;
     };
-  }, [orderId]);
+  }, [orderId, router]);
+
+  const showLoading = syncing || redirecting;
 
   return (
     <main className="pb-20">
       <div className="max-w-frame mx-auto px-4 xl:px-0 py-12 text-center">
-        <h2
-          className={cn([
-            integralCF.className,
-            "font-bold text-[32px] md:text-[40px] text-brand uppercase mb-4",
-          ])}
-        >
-          Thank you
-        </h2>
-        {syncing ? (
-          <p className="text-black/60 mb-8">Confirming your payment…</p>
+        {showLoading ? (
+          <>
+            <h2
+              className={cn([
+                integralCF.className,
+                "font-bold text-[32px] md:text-[40px] text-brand uppercase mb-4",
+              ])}
+            >
+              Thank you
+            </h2>
+            <p className="text-black/60 mb-8">Confirming your payment…</p>
+          </>
         ) : (
           <>
+            <h2
+              className={cn([
+                integralCF.className,
+                "font-bold text-[32px] md:text-[40px] text-brand uppercase mb-4",
+              ])}
+            >
+              Payment status
+            </h2>
             <p className="text-black/70 mb-2">
-              {paid === true
-                ? "Your payment has been received."
-                : paid === false
-                  ? "Payment not confirmed yet."
-                  : "Payment status pending."}
+              {syncError ?? "We could not confirm your payment."}
               {orderId && (
                 <span className="block mt-2 text-sm">
                   Order reference: <strong>{orderId}</strong>
                 </span>
               )}
             </p>
-            {syncError ? (
-              <p className="text-black/60 text-sm mb-8">{syncError}</p>
-            ) : paid === true ? (
-              <p className="text-black/60 text-sm mb-8">
-                We will process your order and notify you when it ships.
-              </p>
-            ) : paid === null ? (
-              <p className="text-black/60 text-sm mb-8">
-                If you already paid, please wait a moment and refresh this page.
-              </p>
-            ) : null}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+              <Button asChild variant="outline" className="rounded-full">
+                <Link href="/account/orders">My orders</Link>
+              </Button>
+              <Button asChild className="rounded-full">
+                <Link href="/cart">Back to cart</Link>
+              </Button>
+            </div>
           </>
         )}
-        <Button asChild className="rounded-full">
-          <Link href="/shop">Continue shopping</Link>
-        </Button>
+        {!showLoading && (
+          <Button asChild variant="outline" className="rounded-full">
+            <Link href="/shop">Continue shopping</Link>
+          </Button>
+        )}
       </div>
     </main>
   );

@@ -37,7 +37,7 @@ const footerLinksData: FooterLinks[] = [
     children: [
       { id: 41, label: "Login", url: AUTH_LOGIN_PATH },
       { id: 42, label: "Register", url: "/auth/sign-up" },
-      { id: 43, label: "My Orders", url: "/account/payments" },
+      { id: 43, label: "My Orders", url: "/account/orders" },
     ],
   },
 ];

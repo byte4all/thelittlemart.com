@@ -17,6 +17,7 @@ import { RootState } from "@/lib/store";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
 import { setFulfillmentMethod } from "@/lib/features/carts/cartsSlice";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { roundTo2 } from "@/lib/currency";
 import { calcDeliveryFee } from "@/lib/fulfillment";
@@ -24,6 +25,8 @@ import { useAuthUser } from "@/lib/auth/client";
 import { authLoginUrl } from "@/lib/auth/login-path";
 
 export default function CartPage() {
+  const searchParams = useSearchParams();
+  const checkoutPending = searchParams.get("checkout") === "pending";
   const user = useAuthUser();
   const dispatch = useAppDispatch();
   const { cart, totalPrice, fulfillmentMethod } = useAppSelector(
@@ -37,6 +40,11 @@ export default function CartPage() {
   return (
     <main className="pb-20">
       <div className="max-w-frame mx-auto px-4 xl:px-0">
+        {checkoutPending && (
+          <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Payment wasn&apos;t completed. Your cart is still here — you can try checkout again.
+          </div>
+        )}
         {cart && cart.items.length > 0 ? (
           <>
             <BreadcrumbCart />
