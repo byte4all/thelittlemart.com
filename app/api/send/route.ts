@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { OrderConfirmationEmail } from "@/components/email-template";
+import { getTransactionalFromEmail, getTransactionalReplyTo } from "@/lib/resend";
 
 const apiKey = process.env.RESEND_API_KEY;
 const resend = apiKey ? new Resend(apiKey) : null;
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Thelittlemart <onboarding@resend.dev>";
 
 type OrderConfirmationBody = {
   to: string;
@@ -50,8 +50,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const replyTo = getTransactionalReplyTo();
     const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
+      from: getTransactionalFromEmail(),
+      ...(replyTo ? { replyTo } : {}),
       to: [normalizedTo],
       subject: `Order confirmation ${orderNumber} – Thelittlemart`,
       react: OrderConfirmationEmail({

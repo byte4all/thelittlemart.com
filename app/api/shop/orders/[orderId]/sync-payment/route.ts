@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getBill } from "@/lib/billplz";
-import { markOrderPaidAndSendEmail } from "@/lib/order-confirmation";
-import { sendOrderConfirmationEmail } from "@/lib/resend";
+import { markOrderPaidAndSendEmail, sendOrderConfirmationForOrderData } from "@/lib/order-confirmation";
+import { markOrderFailedAndNotify } from "@/lib/order-notifications";
 import { getAuthUserAndSync } from "@/lib/auth";
 
 /**
@@ -47,39 +47,17 @@ export async function POST(
     // Order already marked paid (e.g. by webhook). Still send confirmation email
     // in case webhook didn't send it or email failed, so user gets it on success page.
     if (order.status === "CONFIRMED" && order.paymentStatus === "COMPLETED") {
-      let emailSent = false;
-      const customerEmail = order.user?.email?.trim().toLowerCase();
-      if (customerEmail && !customerEmail.endsWith("@user.local")) {
-        const shippingAddress = order.shippingAddress as {
-          fullName?: string;
-          address?: string;
-          city?: string;
-          state?: string;
-          zip?: string;
-          country?: string;
-          phone?: string;
-        } | null;
-        const emailResult = await sendOrderConfirmationEmail({
-          to: customerEmail,
-          orderNumber: order.orderNumber,
-          items: order.items.map((oi) => ({
-            name: oi.product.name,
-            quantity: oi.quantity,
-            price: Number(oi.price),
-          })),
-          total: Number(order.total),
-          shippingAddress: shippingAddress ?? undefined,
-        });
-        emailSent = emailResult.ok;
-        if (!emailResult.ok) {
-          console.error("sync-payment: confirmation email failed (already paid)", emailResult.error);
-        }
+      const emailResult = await sendOrderConfirmationForOrderData(order, {
+        trigger: "AUTO",
+      });
+      if (!emailResult.ok) {
+        console.error("sync-payment: confirmation email failed (already paid)", emailResult.error);
       }
       return NextResponse.json({
         success: true,
         paid: true,
         alreadySynced: true,
-        emailSent,
+        emailSent: emailResult.emailSent ?? false,
       });
     }
 
@@ -105,9 +83,15 @@ export async function POST(
       const isOverdue = dueAt > 0 && Date.now() > dueAt;
       const stateOverdue = String(bill.state || "").toLowerCase() === "overdue";
       if (order.paymentStatus === "PENDING" && (isOverdue || stateOverdue)) {
-        await prisma.order.update({
-          where: { id: order.id },
-          data: { paymentStatus: "FAILED" },
+        const failedResult = await markOrderFailedAndNotify(order.id);
+        if (!failedResult.ok) {
+          console.error("sync-payment: markOrderFailedAndNotify failed", failedResult.error);
+        }
+        return NextResponse.json({
+          success: true,
+          paid: false,
+          paymentFailed: true,
+          emailSent: failedResult.emailSent ?? false,
         });
       }
       return NextResponse.json({ success: true, paid: false });
@@ -125,7 +109,11 @@ export async function POST(
       );
     }
 
-    return NextResponse.json({ success: true, paid: true, emailSent: true });
+    return NextResponse.json({
+      success: true,
+      paid: true,
+      emailSent: result.emailSent ?? false,
+    });
   } catch (err) {
     console.error("sync-payment error:", err);
     return NextResponse.json(

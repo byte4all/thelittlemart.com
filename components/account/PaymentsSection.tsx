@@ -15,8 +15,20 @@ type Order = {
   paymentStatus: string;
   total: number;
   createdAt: string;
+  fulfillmentType: "pickup" | "shipping";
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  pickupScheduledAt: string | null;
   items: OrderItem[];
 };
+
+function formatPickupTime(iso: string): string {
+  return new Date(iso).toLocaleString("en-MY", {
+    timeZone: "Asia/Kuala_Lumpur",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
 
 export default function PaymentsSection() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -41,7 +53,7 @@ export default function PaymentsSection() {
             credentials: "include",
           });
           const sync = await res.json().catch(() => ({}));
-          if (sync.paid && !cancelled) {
+          if ((sync.paid || sync.paymentFailed) && !cancelled) {
             const refetch = await fetch("/api/shop/orders", { credentials: "include" });
             const next = await refetch.json().catch(() => ({}));
             if (!cancelled && next.orders) setOrders(next.orders);
@@ -123,7 +135,15 @@ export default function PaymentsSection() {
               <span className="text-sm text-[var(--stack-muted-color,#6b7280)]">
                 Order: {order.status}
               </span>
+              <span className="text-xs text-[var(--stack-muted-color,#6b7280)]">
+                {order.fulfillmentType === "pickup" ? "Pickup" : "Shipping"}
+              </span>
             </div>
+            {order.paymentStatus === "FAILED" && (
+              <p className="mt-1 text-sm text-[var(--stack-destructive-text,#991b1b)]">
+                Payment was not completed. You can place a new order from the shop.
+              </p>
+            )}
             <ul className="mt-2 text-sm text-[var(--stack-muted-color,#6b7280)] space-y-0.5">
               {order.items.slice(0, 3).map((item, idx) => (
                 <li key={idx}>
@@ -137,6 +157,24 @@ export default function PaymentsSection() {
             <p className="mt-2 text-sm font-medium">
               Total: RM {order.total.toFixed(2)}
             </p>
+            {order.trackingUrl && (
+              <p className="mt-2 text-sm">
+                <a
+                  href={order.trackingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  Track shipment
+                  {order.trackingNumber ? ` (${order.trackingNumber})` : ""}
+                </a>
+              </p>
+            )}
+            {order.fulfillmentType === "pickup" && order.pickupScheduledAt && (
+              <p className="mt-2 text-sm text-[var(--stack-muted-color,#6b7280)]">
+                Scheduled pickup: {formatPickupTime(order.pickupScheduledAt)}
+              </p>
+            )}
           </li>
         ))}
       </ul>

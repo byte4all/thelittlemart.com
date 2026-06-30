@@ -88,3 +88,128 @@ export function OrderConfirmationEmail(props: OrderConfirmationProps) {
     </html>
   );
 }
+
+export type ShippingNotificationProps = {
+  orderNumber: string;
+  trackingNumber?: string | null;
+  trackingUrl?: string | null;
+  items?: { name: string; quantity: number }[];
+};
+
+export function ShippingNotificationEmail(props: ShippingNotificationProps) {
+  const { orderNumber, trackingNumber, trackingUrl, items } = props;
+
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <title>Order {escapeHtml(orderNumber)} shipped</title>
+      </head>
+      <body style={{ fontFamily: "sans-serif", maxWidth: 560, margin: "0 auto", padding: 24, color: "#111" }}>
+        <h2 style={{ margin: "0 0 16px" }}>Your order has shipped</h2>
+        <p>
+          Order reference: <strong>{escapeHtml(orderNumber)}</strong>
+        </p>
+        {trackingNumber ? (
+          <p>
+            Tracking number: <strong>{escapeHtml(trackingNumber)}</strong>
+          </p>
+        ) : null}
+        {trackingUrl ? (
+          <p style={{ marginTop: 16 }}>
+            <a href={trackingUrl} style={{ color: "#2563eb" }}>Track your parcel</a>
+          </p>
+        ) : null}
+        {items && items.length > 0 ? (
+          <>
+            <h3 style={{ marginTop: 24 }}>Items in this shipment</h3>
+            <ul style={{ margin: 0, paddingLeft: 20, color: "#374151" }}>
+              {items.map((i, idx) => (
+                <li key={idx}>
+                  {escapeHtml(i.name)} × {i.quantity}
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : null}
+        <p style={{ marginTop: 24, color: "#6b7280", fontSize: 14 }}>— thelittlemart</p>
+      </body>
+    </html>
+  );
+}
+
+export type PaymentFailedProps = {
+  orderNumber: string;
+  total: number;
+  shopUrl: string;
+  supportUrl: string;
+};
+
+export function PaymentFailedEmail(props: PaymentFailedProps) {
+  const { orderNumber, total, shopUrl, supportUrl } = props;
+
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <title>Payment not received – {escapeHtml(orderNumber)}</title>
+      </head>
+      <body style={{ fontFamily: "sans-serif", maxWidth: 560, margin: "0 auto", padding: 24, color: "#111" }}>
+        <h2 style={{ margin: "0 0 16px" }}>Payment not received</h2>
+        <p>
+          We could not confirm payment for order <strong>{escapeHtml(orderNumber)}</strong> (RM{" "}
+          {Number(total).toFixed(2)}).
+        </p>
+        <p style={{ color: "#374151" }}>
+          Your order was not completed. You can place a new order or contact us if you believe payment was made.
+        </p>
+        <p style={{ marginTop: 16 }}>
+          <a href={shopUrl} style={{ color: "#2563eb" }}>Continue shopping</a>
+          {" · "}
+          <a href={supportUrl} style={{ color: "#2563eb" }}>Customer support</a>
+        </p>
+        <p style={{ marginTop: 24, color: "#6b7280", fontSize: 14 }}>— thelittlemart</p>
+      </body>
+    </html>
+  );
+}
+
+export type PickupReminderProps = {
+  orderNumber: string;
+  pickupAtLabel: string;
+  locationName: string;
+  locationAddress: string;
+  mapsUrl: string;
+};
+
+export function PickupReminderEmail(props: PickupReminderProps) {
+  const { orderNumber, pickupAtLabel, locationName, locationAddress, mapsUrl } = props;
+
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <title>Pickup reminder – {escapeHtml(orderNumber)}</title>
+      </head>
+      <body style={{ fontFamily: "sans-serif", maxWidth: 560, margin: "0 auto", padding: 24, color: "#111" }}>
+        <h2 style={{ margin: "0 0 16px" }}>Pickup reminder</h2>
+        <p>
+          Order reference: <strong>{escapeHtml(orderNumber)}</strong>
+        </p>
+        <p>
+          Scheduled pickup: <strong>{escapeHtml(pickupAtLabel)}</strong>
+        </p>
+        <h3 style={{ marginTop: 24 }}>Pickup location</h3>
+        <p style={{ margin: 0, color: "#374151" }}>
+          <strong>{escapeHtml(locationName)}</strong>
+          <br />
+          {escapeHtml(locationAddress)}
+        </p>
+        <p style={{ marginTop: 16 }}>
+          <a href={mapsUrl} style={{ color: "#2563eb" }}>Open in Google Maps</a>
+        </p>
+        <p style={{ marginTop: 24, color: "#6b7280", fontSize: 14 }}>— thelittlemart</p>
+      </body>
+    </html>
+  );
+}

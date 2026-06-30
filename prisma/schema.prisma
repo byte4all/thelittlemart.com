@@ -162,17 +162,60 @@ model Order {
   paymentMethod   String?
   paymentStatus   PaymentStatus @default(PENDING)
   transactionId   String?
-  /** Billplz bill id (set when bill is created; used for callback) */
   billplzBillId   String?
   userId          String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  trackingNumber             String?
+  trackingUrl                String?
+  trackingEmailSentAt        DateTime?
+  pickupScheduledAt          DateTime?
+  pickupReminderRule         PickupReminderRule @default(MANUAL)
+  pickupReminderSentAt       DateTime?
+  paymentFailedEmailSentAt   DateTime?
 
-  user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  items OrderItem[]
+  user          User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items         OrderItem[]
+  notifications OrderNotification[]
 
   @@index([userId])
   @@map("orders")
+}
+
+enum OrderNotificationType {
+  ORDER_CONFIRMATION
+  PAYMENT_FAILED
+  SHIPPING_TRACKING
+  PICKUP_REMINDER
+}
+
+enum OrderNotificationStatus {
+  SENT
+  SKIPPED
+  FAILED
+}
+
+enum OrderNotificationTrigger {
+  AUTO
+  MANUAL
+}
+
+model OrderNotification {
+  id             String                   @id @default(cuid())
+  orderId        String
+  type           OrderNotificationType
+  status         OrderNotificationStatus
+  trigger        OrderNotificationTrigger   @default(AUTO)
+  recipientEmail String?
+  error          String?
+  createdAt      DateTime                 @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([type, status])
+  @@index([createdAt])
+  @@map("order_notifications")
 }
 
 enum OrderStatus {
@@ -190,6 +233,12 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum PickupReminderRule {
+  MANUAL
+  TWENTY_FOUR_HOURS_BEFORE
+  NIGHT_BEFORE_MIDNIGHT
 }
 
 model OrderItem {

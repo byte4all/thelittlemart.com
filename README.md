@@ -104,8 +104,45 @@ Signed-in Stack Auth users and users who place orders are automatically added to
 - Add to your `.env`:
   ```bash
   RESEND_API_KEY=re_xxxxxxxxx
+  # Order emails (confirmation, tracking, pickup, payment failed)
+  RESEND_TRANSACTIONAL_FROM=thelittlemart <noreply@yourdomain.com>
+  # Optional: where replies go when using noreply@
+  RESEND_TRANSACTIONAL_REPLY_TO=support@yourdomain.com
+  # Marketing / newsletter sends from the app or Resend broadcasts
+  RESEND_MARKETING_FROM=thelittlemart <hello@yourdomain.com>
+  # Legacy fallback if the above are not set:
+  # RESEND_FROM_EMAIL=thelittlemart <orders@yourdomain.com>
   ```
 - If `RESEND_API_KEY` is not set, contact sync is skipped (no errors). Contacts are added on **auth sync** (login/signup) and when a **logged-in user places an order**.
+- Verify your domain in Resend. Both `noreply@` and `hello@` work on the same verified domain with one API key.
+
+## Order notification emails
+
+Transactional emails (via Resend):
+
+| Event | When |
+|-------|------|
+| Order confirmation | After successful Billplz payment |
+| Payment failed | When an unpaid bill becomes overdue |
+| Shipping / tracking | Admin clicks **Send tracking email** on an order |
+| Pickup reminder | Admin sends manually, or automatic via cron |
+
+**Admin notifications center:** open **Notifications** in the admin nav (`/admin/notifications`) to see email status per order (confirmation, payment failed, tracking, pickup reminder), filter by missing sends or failures, and **resend** any type manually. Each send is recorded in the `order_notifications` audit log. Per-order history is also on **Orders** → order detail → **Notification history**.
+
+**Shipping tracking:** **Orders** → order → enter tracking number + courier URL → **Send tracking email** (or resend from Notifications).
+
+Required for emails:
+
+- `RESEND_API_KEY`
+- `RESEND_TRANSACTIONAL_FROM` (order notifications; e.g. `noreply@yourdomain.com`)
+- Optional: `RESEND_TRANSACTIONAL_REPLY_TO`, `RESEND_MARKETING_FROM` (marketing sends)
+- Legacy fallback: `RESEND_FROM_EMAIL`
+
+**Pickup reminders (automatic):** Vercel Cron runs hourly (`vercel.json` → `/api/cron/pickup-reminders`). Set in Vercel env:
+
+- `CRON_SECRET` — random string; cron requests must send `Authorization: Bearer <CRON_SECRET>`
+
+On non-Vercel hosts, call the same URL on a schedule (e.g. [cron-job.org](https://cron-job.org)) with that header.
 
 ## Usage
 

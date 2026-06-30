@@ -13,7 +13,7 @@ type SyncedUser = {
 
 type AuthUser = {
   id: string;
-  email: string;
+  email?: string;
   name?: string | null;
   image?: string | null;
   role?: string | null;
@@ -92,6 +92,12 @@ export async function auth(_request?: Request): Promise<{
 export type AdminAuthResult =
   | { ok: true; user: SyncedUser }
   | { ok: false; status: 401 | 403; error: string };
+
+export type AdminAuthFailure = Extract<AdminAuthResult, { ok: false }>;
+
+export function isAdminAuthFailure(result: AdminAuthResult): result is AdminAuthFailure {
+  return result.ok === false;
+}
 
 /**
  * Enforce signed-in user with Neon Auth admin role.

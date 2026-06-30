@@ -13,7 +13,8 @@ import {
   FiUsers,
   FiBarChart,
   FiArrowLeft,
-  FiAward
+  FiAward,
+  FiMail,
 } from 'react-icons/fi'
 
 const navigation = [
@@ -22,6 +23,7 @@ const navigation = [
   { name: 'Categories', href: '/admin/categories', icon: FiTag },
   { name: 'Brands', href: '/admin/brands', icon: FiAward },
   { name: 'Orders', href: '/admin/orders', icon: FiShoppingBag },
+  { name: 'Notifications', href: '/admin/notifications', icon: FiMail },
   { name: 'Users', href: '/admin/users', icon: FiUsers },
   { name: 'Analytics', href: '/admin/analytics', icon: FiBarChart },
 ]

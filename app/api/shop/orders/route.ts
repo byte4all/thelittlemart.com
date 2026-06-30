@@ -24,19 +24,26 @@ export async function GET(request: Request) {
       },
       orderBy: { createdAt: "desc" },
     });
-    const data = orders.map((o) => ({
-      id: o.id,
-      orderNumber: o.orderNumber,
-      status: o.status,
-      paymentStatus: o.paymentStatus,
-      total: Number(o.total),
-      createdAt: o.createdAt.toISOString(),
-      items: o.items.map((i) => ({
-        productName: i.product.name,
-        quantity: i.quantity,
-        price: Number(i.price),
-      })),
-    }));
+    const data = orders.map((o) => {
+      const addr = o.shippingAddress as { type?: string } | null;
+      return {
+        id: o.id,
+        orderNumber: o.orderNumber,
+        status: o.status,
+        paymentStatus: o.paymentStatus,
+        total: Number(o.total),
+        createdAt: o.createdAt.toISOString(),
+        fulfillmentType: addr?.type === "pickup" ? "pickup" : "shipping",
+        trackingNumber: o.trackingNumber,
+        trackingUrl: o.trackingUrl,
+        pickupScheduledAt: o.pickupScheduledAt?.toISOString() ?? null,
+        items: o.items.map((i) => ({
+          productName: i.product.name,
+          quantity: i.quantity,
+          price: Number(i.price),
+        })),
+      };
+    });
     return NextResponse.json({ orders: data });
   } catch (error) {
     console.error("GET /api/shop/orders error:", error);

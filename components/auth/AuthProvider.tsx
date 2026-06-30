@@ -20,7 +20,7 @@ export default function AuthProvider({
 
   return (
     <NeonAuthUIProvider
-      authClient={authClient}
+      authClient={authClient as React.ComponentProps<typeof NeonAuthUIProvider>["authClient"]}
       baseURL={baseURL}
       magicLink
       emailOTP

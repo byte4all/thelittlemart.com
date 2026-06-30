@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { authAdmin } from "@/lib/auth";
+import { authAdmin, isAdminAuthFailure } from "@/lib/auth";
 
 /** Create one review for a product (admin). Body: { rating: number, comment: string, authorName?: string } */
 export async function POST(
@@ -8,7 +8,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const admin = await authAdmin(request);
-  if (!admin.ok) {
+  if (isAdminAuthFailure(admin)) {
     return NextResponse.json(
       { success: false, error: admin.error },
       { status: admin.status }
