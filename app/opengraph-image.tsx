@@ -18,7 +18,7 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          background: "var(--brand)",
+          background: "#1e96b4",
           color: "white",
           fontFamily: "Arial",
           padding: "40px",
