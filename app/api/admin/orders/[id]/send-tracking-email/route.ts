@@ -11,7 +11,16 @@ export async function POST(
 
   try {
     const { id } = await params;
-    const result = await sendTrackingEmailForOrder(id, { force: true, trigger: "MANUAL" });
+    const body = (await request.json().catch(() => ({}))) as {
+      trackingNumber?: string | null;
+      trackingUrl?: string | null;
+    };
+    const result = await sendTrackingEmailForOrder(id, {
+      force: true,
+      trigger: "MANUAL",
+      trackingNumber: body.trackingNumber,
+      trackingUrl: body.trackingUrl,
+    });
 
     if (!result.ok) {
       return NextResponse.json(

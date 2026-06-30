@@ -222,6 +222,11 @@ export default function AdminOrderDetailPage({
     try {
       const res = await fetch(`/api/admin/orders/${id}/send-tracking-email`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trackingNumber: trackingNumber.trim() || null,
+          trackingUrl: trackingUrl.trim() || null,
+        }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to send email')

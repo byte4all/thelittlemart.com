@@ -34,6 +34,11 @@ export type SendNotificationOpts = {
   trigger?: "AUTO" | "MANUAL";
 };
 
+export type SendTrackingEmailOpts = SendNotificationOpts & {
+  trackingNumber?: string | null;
+  trackingUrl?: string | null;
+};
+
 const orderInclude = {
   user: { select: { email: true, name: true } },
   items: { include: { product: { select: { name: true } } } },
@@ -117,9 +122,28 @@ export async function sendOrderConfirmationForOrder(
   });
 }
 
+function resolveTrackingFields(
+  order: { trackingNumber: string | null; trackingUrl: string | null },
+  opts?: Pick<SendTrackingEmailOpts, "trackingNumber" | "trackingUrl">
+): { trackingNumber: string | null; trackingUrl: string | null } {
+  const trackingNumber =
+    opts?.trackingNumber !== undefined
+      ? (typeof opts.trackingNumber === "string" ? opts.trackingNumber.trim() : "") ||
+        order.trackingNumber?.trim() ||
+        null
+      : order.trackingNumber?.trim() || null;
+  const trackingUrl =
+    opts?.trackingUrl !== undefined
+      ? (typeof opts.trackingUrl === "string" ? opts.trackingUrl.trim() : "") ||
+        order.trackingUrl?.trim() ||
+        null
+      : order.trackingUrl?.trim() || null;
+  return { trackingNumber, trackingUrl };
+}
+
 export async function sendTrackingEmailForOrder(
   orderId: string,
-  opts?: SendNotificationOpts
+  opts?: SendTrackingEmailOpts
 ): Promise<{ ok: boolean; error?: string; emailSent?: boolean }> {
   const trigger = opts?.trigger ?? (opts?.force ? "MANUAL" : "AUTO");
 
@@ -133,10 +157,18 @@ export async function sendTrackingEmailForOrder(
     return { ok: false, error: "Tracking email is only for shipping orders" };
   }
 
-  const trackingNumber = order.trackingNumber?.trim() || null;
-  const trackingUrl = order.trackingUrl?.trim() || null;
+  const { trackingNumber, trackingUrl } = resolveTrackingFields(order, opts);
   if (!trackingNumber && !trackingUrl) {
     return { ok: false, error: "Tracking number or URL is required" };
+  }
+
+  const trackingProvidedInRequest =
+    opts?.trackingNumber !== undefined || opts?.trackingUrl !== undefined;
+  if (trackingProvidedInRequest) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { trackingNumber, trackingUrl },
+    });
   }
 
   const customerEmail = getCustomerEmail(order);
