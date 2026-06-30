@@ -66,7 +66,7 @@ export default function CheckoutSuccessPage() {
         <h2
           className={cn([
             integralCF.className,
-            "font-bold text-[32px] md:text-[40px] text-black uppercase mb-4",
+            "font-bold text-[32px] md:text-[40px] text-brand uppercase mb-4",
           ])}
         >
           Thank you
@@ -89,13 +89,15 @@ export default function CheckoutSuccessPage() {
             </p>
             {syncError ? (
               <p className="text-black/60 text-sm mb-8">{syncError}</p>
-            ) : (
+            ) : paid === true ? (
               <p className="text-black/60 text-sm mb-8">
-                {paid === true
-                  ? "We will process your order and notify you when it ships."
-                  : "If you already paid, please wait a moment and refresh this page."}
+                We will process your order and notify you when it ships.
               </p>
-            )}
+            ) : paid === null ? (
+              <p className="text-black/60 text-sm mb-8">
+                If you already paid, please wait a moment and refresh this page.
+              </p>
+            ) : null}
           </>
         )}
         <Button asChild className="rounded-full">
