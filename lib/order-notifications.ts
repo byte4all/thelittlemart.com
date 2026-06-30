@@ -17,7 +17,11 @@ import {
   sendShippingNotificationEmail,
 } from "@/lib/resend";
 
-const MYT = "Asia/Kuala_Lumpur";
+import {
+  addCalendarDays,
+  dateKey,
+  getDatePartsInMyt,
+} from "@/lib/myt-time";
 
 export type OrderForNotification = Order & {
   user: { email: string | null; name: string | null } | null;
@@ -52,29 +56,6 @@ export function getCustomerEmail(order: { user: { email: string | null } | null 
 
 export function isShippingOrder(order: { shippingAddress: unknown }): boolean {
   return !isPickupAddress(order.shippingAddress);
-}
-
-function getDatePartsInMyt(date: Date): { y: number; m: number; d: number } {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: MYT,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(date);
-  const y = Number(parts.find((p) => p.type === "year")?.value);
-  const m = Number(parts.find((p) => p.type === "month")?.value);
-  const d = Number(parts.find((p) => p.type === "day")?.value);
-  return { y, m, d };
-}
-
-function dateKey({ y, m, d }: { y: number; m: number; d: number }): string {
-  return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-}
-
-function addCalendarDays(key: string, days: number): string {
-  const [y, m, d] = key.split("-").map(Number);
-  const utc = new Date(Date.UTC(y, m - 1, d + days));
-  return dateKey({ y: utc.getUTCFullYear(), m: utc.getUTCMonth() + 1, d: utc.getUTCDate() });
 }
 
 export function shouldSendPickupReminder(

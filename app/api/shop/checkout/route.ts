@@ -10,6 +10,8 @@ import {
   type FulfillmentAddressInput,
   type FulfillmentMethod,
 } from "@/lib/fulfillment";
+import { getPickupScheduleConfig } from "@/lib/pickup-schedule-store";
+import { validatePickupSlot } from "@/lib/pickup-schedule";
 
 function generateOrderNumber(): string {
   return `ORD-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
@@ -45,10 +47,12 @@ export async function POST(request: Request) {
       shippingAddress,
       items: rawItems,
       fulfillmentMethod: rawFulfillmentMethod,
+      pickupScheduledAt: rawPickupScheduledAt,
     } = body as {
       shippingAddress: FulfillmentAddressInput;
       items: { slug?: string; id?: string; quantity: number }[];
       fulfillmentMethod?: FulfillmentMethod;
+      pickupScheduledAt?: string;
     };
 
     const fulfillmentMethod: FulfillmentMethod =
@@ -95,6 +99,26 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
+    }
+
+    let pickupScheduledAt: Date | undefined;
+    if (fulfillmentMethod === "pickup") {
+      if (!rawPickupScheduledAt?.trim()) {
+        return NextResponse.json(
+          { success: false, error: "Please select a pickup date and time." },
+          { status: 400 }
+        );
+      }
+      const config = await getPickupScheduleConfig();
+      const orderAt = new Date();
+      const validation = validatePickupSlot(rawPickupScheduledAt.trim(), orderAt, config);
+      if (!validation.valid) {
+        return NextResponse.json(
+          { success: false, error: validation.error ?? "Invalid pickup slot" },
+          { status: 400 }
+        );
+      }
+      pickupScheduledAt = new Date(rawPickupScheduledAt.trim());
     }
 
     const items = await resolveItems(rawItems);
@@ -166,6 +190,7 @@ export async function POST(request: Request) {
           paymentStatus: "PENDING",
           paymentMethod: "billplz",
           userId,
+          ...(pickupScheduledAt && { pickupScheduledAt }),
         },
       });
 

@@ -14,20 +14,11 @@ interface DashboardStats {
   topProducts: any[]
 }
 
-const CURRENCY_OPTIONS = [
-  { value: 'RM', label: 'RM (Malaysian Ringgit)' },
-  { value: 'USD', label: 'USD ($)' },
-  { value: 'SGD', label: 'SGD' },
-  { value: 'EUR', label: 'EUR (€)' },
-  { value: 'GBP', label: 'GBP (£)' },
-]
-
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currencySymbol, setCurrencySymbol] = useState('RM')
-  const [currencySaving, setCurrencySaving] = useState(false)
   const [seedReviewsLoading, setSeedReviewsLoading] = useState(false)
   const [seedReviewsResult, setSeedReviewsResult] = useState<string | null>(null)
   const [seedPersonalCareLoading, setSeedPersonalCareLoading] = useState(false)
@@ -113,23 +104,6 @@ export default function AdminDashboard() {
     }
   ]
 
-  const saveCurrency = async () => {
-    setCurrencySaving(true)
-    try {
-      const res = await fetch('/api/admin/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currencySymbol }),
-      })
-      if (res.ok) {
-        const data = await res.json()
-        if (data?.settings?.currencySymbol) setCurrencySymbol(data.settings.currencySymbol)
-      }
-    } finally {
-      setCurrencySaving(false)
-    }
-  }
-
   const seedTowelReviews = async () => {
     setSeedReviewsResult(null)
     setSeedReviewsLoading(true)
@@ -177,36 +151,17 @@ export default function AdminDashboard() {
 
       {/* Global settings – visible at top */}
       <div className="bg-white shadow rounded-lg border-2 border-gray-200 p-6 mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-1">Global settings</h2>
-        <p className="text-sm text-gray-500 mb-5">Site-wide currency and seed reviews for cotton and feminine care products, plus personal care (hair & body). These apply across the store.</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Review seeding</h2>
+        <p className="text-sm text-gray-500 mb-5">
+          Seed reviews for cotton, feminine care, and personal care products. Currency and pickup
+          hours are in{' '}
+          <Link href="/admin/settings" className="text-blue-600 hover:underline">
+            Settings
+          </Link>
+          .
+        </p>
 
         <div className="space-y-6">
-          {/* Currency */}
-          <div className="pb-5 border-b border-gray-100">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Site currency</h3>
-            <p className="text-sm text-gray-500 mb-3">Used on all product prices, cart, and orders.</p>
-            <div className="flex flex-wrap items-center gap-3">
-              <select
-                value={currencySymbol}
-                onChange={(e) => setCurrencySymbol(e.target.value)}
-                className="rounded-md border border-gray-300 px-3 py-2 text-sm"
-              >
-                {CURRENCY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={saveCurrency}
-                disabled={currencySaving}
-                className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
-              >
-                {currencySaving ? 'Saving…' : 'Save currency'}
-              </button>
-            </div>
-          </div>
-
-          {/* Add reviews to all cotton/feminine products */}
           <div className="pb-5 border-b border-gray-100">
             <h3 className="text-lg font-medium text-gray-900 mb-2">Cotton & feminine reviews</h3>
             <p className="text-sm text-gray-500 mb-3">Add product-specific positive reviews for Cotton And Wipes and Feminine Care products.</p>

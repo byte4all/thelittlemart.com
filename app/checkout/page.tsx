@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import FulfillmentSelector, {
   FulfillmentSummaryRow,
 } from "@/components/cart/FulfillmentSelector";
-import PickupAddressLink from "@/components/cart/PickupAddressLink";
+import PickupSlotPicker from "@/components/checkout/PickupSlotPicker";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
 import { setFulfillmentMethod } from "@/lib/features/carts/cartsSlice";
 import { RootState } from "@/lib/store";
@@ -33,6 +33,8 @@ export default function CheckoutPage() {
   const orderTotalRounded = roundTo2(subtotalRounded + deliveryFee);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pickupScheduledAt, setPickupScheduledAt] = useState<string | null>(null);
+  const [pickupReady, setPickupReady] = useState(false);
 
   React.useEffect(() => {
     if (user === undefined) return;
@@ -78,6 +80,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (fulfillmentMethod === "pickup" && !pickupScheduledAt) {
+      setError("Please select a pickup date and time.");
+      return;
+    }
+
     setError(null);
     setLoading(true);
     try {
@@ -90,6 +97,8 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           fulfillmentMethod,
+          ...(fulfillmentMethod === "pickup" &&
+            pickupScheduledAt && { pickupScheduledAt }),
           shippingAddress: {
             fullName: shipping.fullName,
             phone: shipping.phone,
@@ -158,6 +167,7 @@ export default function CheckoutPage() {
               onChange={(method) => dispatch(setFulfillmentMethod(method))}
               subtotal={subtotalRounded}
               formatPrice={formatPrice}
+              showPickupAddress={false}
             />
 
             <InputGroup className="bg-[#F0F0F0]">
@@ -185,12 +195,12 @@ export default function CheckoutPage() {
             </InputGroup>
 
             {fulfillmentMethod === "pickup" ? (
-              <div className="rounded-xl border border-brand/10 p-4 bg-brand/5">
-                <p className="text-sm font-medium text-brand mb-1">
-                  Pickup location
-                </p>
-                <PickupAddressLink />
-              </div>
+              <PickupSlotPicker
+                key={fulfillmentMethod}
+                value={pickupScheduledAt}
+                onChange={setPickupScheduledAt}
+                onReadyChange={setPickupReady}
+              />
             ) : (
               <>
                 <InputGroup className="bg-[#F0F0F0]">
@@ -280,7 +290,7 @@ export default function CheckoutPage() {
             )}
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || (fulfillmentMethod === "pickup" && !pickupReady)}
               className="w-full rounded-full h-12 font-medium"
             >
               {loading ? "Processing…" : "Proceed to payment"}

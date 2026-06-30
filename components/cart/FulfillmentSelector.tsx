@@ -16,6 +16,8 @@ type FulfillmentSelectorProps = {
   subtotal: number;
   formatPrice: (amount: number) => string;
   className?: string;
+  /** When false, pickup address is not shown inside the selector (e.g. checkout shows it with the calendar). */
+  showPickupAddress?: boolean;
 };
 
 export default function FulfillmentSelector({
@@ -24,6 +26,7 @@ export default function FulfillmentSelector({
   subtotal,
   formatPrice,
   className,
+  showPickupAddress = true,
 }: FulfillmentSelectorProps) {
   const shippingFeeLabel = getShippingFeeLabel(subtotal, formatPrice);
 
@@ -52,7 +55,7 @@ export default function FulfillmentSelector({
             <span className="text-sm font-bold text-brand shrink-0">Free</span>
           </div>
         </button>
-        {method === "pickup" && (
+        {method === "pickup" && showPickupAddress && (
           <PickupAddressLink className="px-4 pb-4 -mt-1" />
         )}
       </div>

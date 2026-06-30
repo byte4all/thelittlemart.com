@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { setCurrencySymbol } from '@/lib/settings'
+import { updateSiteSettings } from '@/lib/settings'
 import { requireAdminApi } from '../_utils'
 
 export async function GET(request: NextRequest) {
@@ -15,12 +15,10 @@ export async function PUT(request: NextRequest) {
   if (forbidden) return forbidden
   try {
     const body = await request.json()
-    const { currencySymbol } = body
-    if (currencySymbol != null) {
-      await setCurrencySymbol(String(currencySymbol))
-    }
-    const { getSettings } = await import('@/lib/settings')
-    const settings = await getSettings()
+    const settings = await updateSiteSettings({
+      currencySymbol: body.currencySymbol,
+      pickupSchedule: body.pickupSchedule,
+    })
     return NextResponse.json({ success: true, settings })
   } catch (error) {
     console.error('Error updating settings:', error)
