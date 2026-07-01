@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
-import React from "react";
 import * as motion from "framer-motion/client";
 import DressStyleCard from "./DressStyleCard";
 
@@ -28,16 +27,16 @@ const DressStyle = () => {
           className="flex flex-col sm:flex-row md:h-[289px] space-y-4 sm:space-y-0 sm:space-x-5 mb-4 sm:mb-5"
         >
           <DressStyleCard
-            title="Body Wash"
-            url="/shop#body-wash"
-            imageSrc="/products/category/body-wash.webp"
+            title="Kitchenware"
+            url="/shop?category=kitchenware"
+            imageSrc="/products/category/kitchenware/kitchenware.webp"
             imageSizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 40vw, 407px"
             className="h-[190px] md:max-w-[260px] lg:max-w-[360px] xl:max-w-[407px]"
           />
           <DressStyleCard
-            title="Shampoo & Conditioner"
-            url="/shop#shampoo-and-conditioner"
-            imageSrc="/products/category/shampoo-and-conditioner.webp"
+            title="Stationery"
+            url="/shop?category=stationery"
+            imageSrc="/products/category/stationery/stationery.webp"
             imageSizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 60vw, 684px"
             className="h-[190px] md:max-w-[684px]"
           />
@@ -47,19 +46,41 @@ const DressStyle = () => {
           whileInView={{ y: "0", opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 1, duration: 0.6 }}
-          className="flex flex-col sm:flex-row md:h-[289px] space-y-5 sm:space-y-0 sm:space-x-5"
+          className="flex flex-col sm:flex-row md:h-[289px] space-y-4 sm:space-y-0 sm:space-x-5 mb-4 sm:mb-5"
         >
           <DressStyleCard
-            title="Towels"
-            url="/shop#kiwi-towels"
-            imageSrc="/products/category/towels.webp"
+            title="Household Items"
+            url="/shop?category=household-items"
+            imageSrc="/products/category/household-items/household-items.webp"
             imageSizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 60vw, 684px"
             className="h-[190px] md:max-w-[684px]"
           />
           <DressStyleCard
-            title="Bar Soap"
-            url="/shop#soap-bar"
-            imageSrc="/products/category/soap-bar.webp"
+            title="Personal Care"
+            url="/shop?category=personal-care"
+            imageSrc="/products/category/personal-care/personal-care.webp"
+            imageSizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 40vw, 407px"
+            className="h-[190px] md:max-w-[260px] lg:max-w-[360px] xl:max-w-[407px]"
+          />
+        </motion.div>
+        <motion.div
+          initial={{ y: "100px", opacity: 0 }}
+          whileInView={{ y: "0", opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 1, duration: 0.6 }}
+          className="flex flex-col sm:flex-row md:h-[289px] space-y-4 sm:space-y-0 sm:space-x-5 mb-2 sm:mb-4"
+        >
+          <DressStyleCard
+            title="Baby & Kids"
+            url="/shop?category=baby-kids"
+            imageSrc="/products/category/baby-and-kids/baby-and-kids.webp"
+            imageSizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 60vw, 684px"
+            className="h-[190px] md:max-w-[684px]"
+          />
+          <DressStyleCard
+            title="Condiments"
+            url="/shop?category=condiments"
+            imageSrc="/products/category/condiments/condiments.webp"
             imageSizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 40vw, 407px"
             className="h-[190px] md:max-w-[260px] lg:max-w-[360px] xl:max-w-[407px]"
           />
