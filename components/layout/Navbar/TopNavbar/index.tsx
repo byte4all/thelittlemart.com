@@ -11,7 +11,6 @@ import {
 import { MenuItem } from "./MenuItem";
 import Image from "next/image";
 import InputGroup from "@/components/ui/input-group";
-import ResTopNavbar from "./ResTopNavbar";
 import CartBtn from "./CartBtn";
 import UserMenu from "./UserMenu";
 
@@ -80,9 +79,6 @@ const TopNavbar = () => {
     <nav className="sticky top-0 bg-white z-20">
       <div className="flex relative max-w-frame mx-auto items-center justify-between md:justify-start py-5 md:py-6 px-4 xl:px-0">
         <div className="flex items-center">
-          <div className="block md:hidden mr-4">
-            <ResTopNavbar data={data} />
-          </div>
           <Link
             href="/"
             className={cn([
