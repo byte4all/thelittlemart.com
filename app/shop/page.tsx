@@ -1,11 +1,5 @@
 import BreadcrumbShop from "@/components/shop-page/BreadcrumbShop";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import ShopSortSelect from "@/components/shop-page/ShopSortSelect";
 import MobileFilters from "@/components/shop-page/filters/MobileFilters";
 import Filters from "@/components/shop-page/filters";
 import { FiSliders } from "react-icons/fi";
@@ -72,6 +66,8 @@ const CANONICAL_QUERY_KEYS = new Set([
   "bestSellers",
   "view",
   "page",
+  "sortBy",
+  "order",
 ]);
 
 function toSingleValue(value: string | string[] | undefined): string | undefined {
@@ -121,6 +117,8 @@ function buildShopQuery(params: Record<string, string | string[] | undefined>, p
   const maxPrice = typeof params?.maxPrice === "string" ? params.maxPrice : undefined;
   const bestSellers = params?.bestSellers === "1" || params?.bestSellers === "true";
   const view = typeof params?.view === "string" ? params.view : undefined;
+  const sortBy = typeof params?.sortBy === "string" ? params.sortBy : undefined;
+  const order = typeof params?.order === "string" ? params.order : undefined;
   if (category) q.set("category", category);
   if (brand) q.set("brand", brand);
   if (color) q.set("color", color);
@@ -129,6 +127,8 @@ function buildShopQuery(params: Record<string, string | string[] | undefined>, p
   if (maxPrice) q.set("maxPrice", maxPrice);
   if (bestSellers) q.set("bestSellers", "1");
   if (view === VIEW_BRANDS) q.set("view", VIEW_BRANDS);
+  if (sortBy) q.set("sortBy", sortBy);
+  if (order) q.set("order", order);
   if (page > 1) q.set("page", String(page));
   const s = q.toString();
   return s ? `?${s}` : "";
@@ -153,6 +153,10 @@ export default async function ShopPage({
 
   const minPriceNum = minPrice != null && minPrice !== "" ? parseFloat(minPrice) : undefined;
   const maxPriceNum = maxPrice != null && maxPrice !== "" ? parseFloat(maxPrice) : undefined;
+
+  const sortByParam = typeof params?.sortBy === "string" ? params.sortBy : undefined;
+  const orderParam = params?.order === "asc" ? "asc" : "desc";
+  const productSortBy = sortByParam ?? "manual";
 
   const brandsViewLimit = 500;
 
@@ -180,8 +184,8 @@ export default async function ShopPage({
             maxPrice: maxPriceNum,
             limit: PER_PAGE,
             offset,
-            sortBy: "createdAt",
-            order: "desc",
+            sortBy: productSortBy,
+            order: orderParam,
           }),
     ]);
 
@@ -328,17 +332,7 @@ export default async function ShopPage({
                 </span>
                 {!viewBrands && (
                   <div className="flex items-center">
-                    Sort by:{" "}
-                    <Select defaultValue="most-popular">
-                      <SelectTrigger className="font-medium text-sm px-1.5 sm:text-base w-fit text-black bg-transparent shadow-none border-none">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="most-popular">Most Popular</SelectItem>
-                        <SelectItem value="low-price">Low Price</SelectItem>
-                        <SelectItem value="high-price">High Price</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    Sort by: <ShopSortSelect hasCategory={!!category} />
                   </div>
                 )}
               </div>

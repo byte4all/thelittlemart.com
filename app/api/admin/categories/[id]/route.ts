@@ -15,18 +15,19 @@ export async function GET(
       where: { id },
       include: {
         productCategories: {
+          orderBy: { sortOrder: "asc" },
           include: {
             product: {
               select: {
                 id: true,
                 name: true,
                 price: true,
-                thumbnail: true
-              }
-            }
-          }
-        }
-      }
+                thumbnail: true,
+              },
+            },
+          },
+        },
+      },
     })
 
     if (!category) {
@@ -39,7 +40,15 @@ export async function GET(
     // Expose products array for backward compatibility (list of products in this category)
     const categoryResponse = {
       ...category,
-      products: category.productCategories.map((pc) => pc.product)
+      products: category.productCategories.map((pc) => ({
+        ...pc.product,
+        sortOrder: pc.sortOrder,
+      })),
+      productCategories: category.productCategories.map((pc) => ({
+        productId: pc.productId,
+        sortOrder: pc.sortOrder,
+        product: pc.product,
+      })),
     }
 
     return NextResponse.json({
@@ -65,7 +74,7 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    const { name, slug, description, image, parentId } = body
+    const { name, slug, description, image, parentId, sortOrder, listMode } = body
 
     if (!name || !slug) {
       return NextResponse.json(
@@ -95,15 +104,44 @@ export async function PUT(
       }
     }
 
+    const existing = await prisma.category.findUnique({
+      where: { id },
+      select: { parentId: true },
+    })
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Category not found' },
+        { status: 404 }
+      )
+    }
+
+    const updateData: {
+      name: string
+      slug: string
+      description?: string | null
+      image?: string | null
+      parentId: string | null
+      sortOrder?: number
+      listMode?: 'MANUAL' | 'ROLLUP'
+    } = {
+      name,
+      slug,
+      description,
+      image,
+      parentId: parentId || null,
+    }
+
+    if (typeof sortOrder === 'number') {
+      updateData.sortOrder = sortOrder
+    }
+
+    if (!existing.parentId && (listMode === 'MANUAL' || listMode === 'ROLLUP')) {
+      updateData.listMode = listMode
+    }
+
     const category = await prisma.category.update({
       where: { id },
-      data: {
-        name,
-        slug,
-        description,
-        image,
-        parentId: parentId || null
-      },
+      data: updateData,
       include: {
         parent: {
           select: {

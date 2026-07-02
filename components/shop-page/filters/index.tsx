@@ -137,7 +137,7 @@ export default function Filters({ options }: FiltersProps) {
       <Button
         type="button"
         onClick={applyFilter}
-        className="bg-black w-full rounded-full text-sm font-medium py-4 h-12"
+        className="bg-brand w-full rounded-full text-sm font-medium py-4 h-12"
       >
         Apply Filter
       </Button>
@@ -146,7 +146,7 @@ export default function Filters({ options }: FiltersProps) {
           type="button"
           variant="outline"
           onClick={clearFilters}
-          className="w-full rounded-full text-sm font-medium py-4 h-12 mt-2 border-black/20"
+          className="w-full rounded-full text-sm text-brand font-medium py-4 h-12 mt-2 border-black/20"
         >
           Clear filters
         </Button>

@@ -22,14 +22,16 @@ export async function GET() {
             description: true,
             image: true
           },
-          orderBy: {
-            name: 'asc'
-          }
+          orderBy: [
+            { sortOrder: 'asc' },
+            { name: 'asc' },
+          ]
         }
       },
-      orderBy: {
-        name: 'asc'
-      }
+      orderBy: [
+        { sortOrder: 'asc' },
+        { name: 'asc' },
+      ]
     })
 
     return NextResponse.json({

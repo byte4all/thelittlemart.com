@@ -3,6 +3,19 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { FiPlus, FiEdit, FiTrash2, FiTag, FiAward } from 'react-icons/fi'
+import ReorderButtons, { assignSortOrders, moveItem } from '@/components/admin/ReorderButtons'
+
+interface Subcategory {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  image: string | null
+  sortOrder: number
+  _count: {
+    productCategories: number
+  }
+}
 
 interface Category {
   id: string
@@ -10,6 +23,7 @@ interface Category {
   slug: string
   description: string | null
   image: string | null
+  sortOrder: number
   createdAt: string
   parentId: string | null
   parent: {
@@ -17,16 +31,7 @@ interface Category {
     name: string
     slug: string
   } | null
-  children: Array<{
-    id: string
-    name: string
-    slug: string
-    description: string | null
-    image: string | null
-    _count: {
-      productCategories: number
-    }
-  }>
+  children: Subcategory[]
   _count: {
     productCategories: number
   }
@@ -38,6 +43,7 @@ export default function CategoriesPage() {
   const [error, setError] = useState<string | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null)
+  const [reordering, setReordering] = useState(false)
 
   useEffect(() => {
     fetchCategories()
@@ -77,6 +83,56 @@ export default function CategoriesPage() {
       alert('Failed to delete category')
     }
   }
+
+  const saveCategoryOrder = async (items: { id: string }[]) => {
+    setReordering(true)
+    try {
+      const response = await fetch('/api/admin/categories/reorder', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: assignSortOrders(items) }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to save order')
+      }
+      await fetchCategories()
+    } catch (err) {
+      console.error(err)
+      alert('Failed to save category order')
+      await fetchCategories()
+    } finally {
+      setReordering(false)
+    }
+  }
+
+  const handleMoveMainCategory = async (index: number, direction: 'up' | 'down') => {
+    const mains = categories
+      .filter((cat) => !cat.parentId)
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name))
+    const next = moveItem(mains, index, direction)
+    if (next === mains) return
+    await saveCategoryOrder(next)
+  }
+
+  const handleMoveSubcategory = async (
+    parentId: string,
+    index: number,
+    direction: 'up' | 'down'
+  ) => {
+    const parent = categories.find((c) => c.id === parentId)
+    if (!parent) return
+
+    const subs = [...parent.children].sort(
+      (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)
+    )
+    const next = moveItem(subs, index, direction)
+    if (next === subs) return
+    await saveCategoryOrder(next)
+  }
+
+  const mainCategories = categories
+    .filter((cat) => !cat.parentId)
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name))
 
   if (loading) {
     return (
@@ -137,13 +193,23 @@ export default function CategoriesPage() {
             </div>
           </div>
         ) : (
-          categories
-            .filter(cat => !cat.parentId) // Only show main categories
-            .map((category) => (
+          mainCategories.map((category, mainIndex) => {
+            const subcategories = [...category.children].sort(
+              (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)
+            )
+
+            return (
               <div key={category.id} className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="p-6">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0">
+                    <ReorderButtons
+                      onMoveUp={() => handleMoveMainCategory(mainIndex, 'up')}
+                      onMoveDown={() => handleMoveMainCategory(mainIndex, 'down')}
+                      disableUp={mainIndex === 0}
+                      disableDown={mainIndex === mainCategories.length - 1}
+                      saving={reordering}
+                    />
+                    <div className="flex-shrink-0 ml-2">
                       {category.image ? (
                         <img 
                           className="h-12 w-12 rounded-lg object-cover" 
@@ -180,10 +246,17 @@ export default function CategoriesPage() {
                     <div className="mt-6 pt-6 border-t border-gray-200">
                       <h4 className="text-sm font-medium text-gray-700 mb-3">Subcategories</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {category.children.map((subcategory) => (
+                        {subcategories.map((subcategory, subIndex) => (
                           <div key={subcategory.id} className="bg-gray-50 rounded-lg p-4">
                             <div className="flex items-center justify-between">
-                              <div className="flex-1">
+                              <ReorderButtons
+                                onMoveUp={() => handleMoveSubcategory(category.id, subIndex, 'up')}
+                                onMoveDown={() => handleMoveSubcategory(category.id, subIndex, 'down')}
+                                disableUp={subIndex === 0}
+                                disableDown={subIndex === subcategories.length - 1}
+                                saving={reordering}
+                              />
+                              <div className="flex-1 ml-2">
                                 <h5 className="text-sm font-medium text-gray-900">
                                   {subcategory.name}
                                 </h5>
@@ -252,7 +325,8 @@ export default function CategoriesPage() {
                   )}
                 </div>
               </div>
-            ))
+            )
+          })
         )}
       </div>
 

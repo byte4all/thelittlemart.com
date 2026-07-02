@@ -28,17 +28,23 @@ export async function GET(request: Request) {
             slug: true,
             description: true,
             image: true,
+            sortOrder: true,
             _count: {
               select: {
                 productCategories: true
               }
             }
-          }
+          },
+          orderBy: [
+            { sortOrder: 'asc' },
+            { name: 'asc' },
+          ],
         }
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy: [
+        { sortOrder: 'asc' },
+        { name: 'asc' },
+      ],
     })
 
     return NextResponse.json({
@@ -83,13 +89,20 @@ export async function POST(request: Request) {
       }
     }
 
+    const maxSort = await prisma.category.aggregate({
+      where: { parentId: parentId || null },
+      _max: { sortOrder: true },
+    })
+    const sortOrder = (maxSort._max.sortOrder ?? -10) + 10
+
     const category = await prisma.category.create({
       data: {
         name,
         slug,
         description,
         image,
-        parentId: parentId || null
+        parentId: parentId || null,
+        sortOrder,
       },
       include: {
         parent: {

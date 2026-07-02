@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getProductTemplateOverrides, setProductTemplateOverrides, normalizeTemplateOverride } from '@/lib/product-templates'
 import { requireAdminApi } from '../../_utils'
+import { buildProductCategoryCreates, getProductCategorySortOrderMap } from '@/lib/product-category-sort'
 
 export async function GET(
   request: Request,
@@ -177,9 +178,16 @@ export async function PUT(
       }
     }
 
+    const preservedSortOrders = await getProductCategorySortOrderMap(prisma, id)
+
     await prisma.productCategory.deleteMany({
       where: { productId: id }
     })
+
+    const categoryCreates =
+      resolvedCategoryIds.length > 0
+        ? await buildProductCategoryCreates(prisma, resolvedCategoryIds, preservedSortOrders)
+        : []
 
     const product = await prisma.product.update({
       where: { id },
@@ -204,9 +212,10 @@ export async function PUT(
         volumeMl: volumeMl ?? null,
         weightKg: weightKg ?? null,
         dimensions: resolvedDimensions ?? null,
-        productCategories: resolvedCategoryIds.length > 0
-          ? { create: resolvedCategoryIds.map((categoryId: string) => ({ categoryId })) }
-          : undefined
+        productCategories:
+          categoryCreates.length > 0
+            ? { create: categoryCreates }
+            : undefined
       },
       include: {
         productCategories: { include: { category: true } },

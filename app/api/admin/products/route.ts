@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminApi } from '../_utils'
+import { buildProductCategoryCreates } from '@/lib/product-category-sort'
 
 export async function GET(request: Request) {
   const forbidden = await requireAdminApi(request)
@@ -176,6 +177,11 @@ export async function POST(request: Request) {
       }
     }
 
+    const categoryCreates =
+      resolvedCategoryIds.length > 0
+        ? await buildProductCategoryCreates(prisma, resolvedCategoryIds)
+        : []
+
     const product = await prisma.product.create({
       data: {
         name,
@@ -198,9 +204,10 @@ export async function POST(request: Request) {
         volumeMl: volumeMl ?? null,
         weightKg: weightKg ?? null,
         dimensions: resolvedDimensions ?? null,
-        productCategories: resolvedCategoryIds.length > 0
-          ? { create: resolvedCategoryIds.map((categoryId: string) => ({ categoryId })) }
-          : undefined
+        productCategories:
+          categoryCreates.length > 0
+            ? { create: categoryCreates }
+            : undefined
       },
       include: {
         productCategories: { include: { category: true } },
