@@ -35,15 +35,13 @@ export default function AboutUsPage() {
           </div>
           <div className={s.section}>
             <p className={s.p}>
-              We believe in bringing a touch of the French Riviera to your daily
-              routine. Our carefully curated collection features premium bath
-              essentials and luxury towels that transform ordinary moments into
-              extraordinary experiences.
+              We curate practical, quality products for everyday living. Our
+              catalog spans kitchenware, stationery, household items, condiments,
+              personal care, and baby and kids essentials.
             </p>
             <p className={s.p}>
-              Whether you're refreshing after a shower or relaxing at the beach,
-              our products deliver the perfect blend of quality, comfort, and
-              timeless style.
+              We focus on useful products, clear information, and dependable
+              quality so shopping for daily essentials is simple and reliable.
             </p>
           </div>
         </section>

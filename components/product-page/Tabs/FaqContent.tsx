@@ -11,7 +11,7 @@ import { getCategoryKey, getFaqsForCategory } from "@/lib/product-page-content";
 import type { CategoryKey } from "@/lib/product-page-content";
 
 type FaqContentProps = {
-  /** Category slugs from the product (e.g. ["towels", "bath"]) to pick FAQ set when categoryKey not set. */
+  /** Category slugs from the product to pick FAQ set when categoryKey not set. */
   categorySlugs?: string[];
   /** Override: use this template key instead of deriving from categorySlugs. */
   categoryKey?: CategoryKey;

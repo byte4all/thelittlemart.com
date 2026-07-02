@@ -28,7 +28,7 @@ export default function OpenGraphImage() {
           Thelittlemart
         </div>
         <div style={{ marginTop: 16, fontSize: 32, opacity: 0.9 }}>
-          Premium bath essentials and luxury towels
+          Curated everyday essentials
         </div>
       </div>
     ),

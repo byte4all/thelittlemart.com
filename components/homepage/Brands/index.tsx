@@ -183,7 +183,7 @@ const Brands = () => {
   }, []);
 
   return (
-    <div className="bg-black relative">
+    <div className="hidden md:block bg-black relative">
       <div className="max-w-frame mx-auto px-4 xl:px-0 pt-7 md:pt-9">
         <h2
           className={cn([

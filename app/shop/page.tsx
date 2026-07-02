@@ -102,7 +102,7 @@ export async function generateMetadata({
   return buildPageMetadata({
     title: titleParts.join(" - "),
     description:
-      "Browse premium French products, including organic personal care and Saint-Tropez 100% cotton towels for pools, showers, and the beach.",
+      "Browse curated everyday essentials across kitchenware, stationery, household items, condiments, personal care, and baby and kids categories.",
     path: canonicalPath,
   });
 }

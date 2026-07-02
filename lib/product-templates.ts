@@ -19,19 +19,27 @@ function detailsKey(productId: string): string {
 }
 
 const VALID_KEYS: CategoryKey[] = [
-  "towel",
-  "shampoo",
-  "shampoo-colored",
-  "shampoo-normal",
-  "shampoo-soft",
-  "shampoo-dandruff",
-  "shampoo-kids",
-  "conditioner",
-  "body-wash",
-  "body-soft-skin",
-  "body-kids",
-  "mixa-bebe",
-  "soap",
+  "stationery",
+  "stationery-pen-and-pencils",
+  "stationery-papers-filing",
+  "stationery-geometry",
+  "stationery-staplers-and-staples",
+  "household-items",
+  "household-items-cleaning-supplies",
+  "household-items-laundry-and-drying",
+  "household-items-insect-repellents",
+  "kitchenware",
+  "kitchenware-cooking-tools",
+  "kitchenware-bakeware-and-ovenware",
+  "kitchenware-bar-and-drinks",
+  "kitchenware-dining",
+  "kitchenware-candles-and-party",
+  "kitchenware-kitchen-tools",
+  "condiments",
+  "condiments-french-salt",
+  "condiments-oil-and-vinegars",
+  "personal-care",
+  "baby-kids",
   "default",
 ];
 
@@ -62,12 +70,8 @@ export async function getProductTemplateOverrides(
     prisma.setting.findUnique({ where: { key: detailsKey(productId) } }),
   ]);
   return {
-    faqTemplate:
-      faqRow?.value && isValidCategoryKey(faqRow.value) ? (faqRow.value as CategoryKey) : null,
-    detailsTemplate:
-      detailsRow?.value && isValidCategoryKey(detailsRow.value)
-        ? (detailsRow.value as CategoryKey)
-        : null,
+    faqTemplate: normalizeTemplateOverride(faqRow?.value),
+    detailsTemplate: normalizeTemplateOverride(detailsRow?.value),
   };
 }
 

@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { ...buildPageMetadata({
   title: "Thelittlemart",
   description:
-    "Shop premium French products, including organic personal care and 100% cotton towels from Saint-Tropez, France, ideal for pools, showers, and the beach.",
+    "Shop curated everyday essentials across kitchenware, stationery, household items, condiments, personal care, and baby and kids categories.",
   path: "/",
 }),
 other: {

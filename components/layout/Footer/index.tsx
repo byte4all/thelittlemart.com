@@ -75,7 +75,7 @@ const Footer = () => {
                 THELITTLEMART
               </h1>
               <p className="text-black/60 text-sm mb-9">
-              Quality essentials for your body and home. From luxurious soaps to Saint-Tropez inspired towels.
+              Quality essentials for everyday living across kitchenware, stationery, household items, condiments, personal care, and baby and kids.
               </p>
               <div className="flex items-center">
                 {socialsData.map((social) => {

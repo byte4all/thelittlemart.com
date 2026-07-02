@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import type { CategoryOption } from "@/components/shop-page/filters/CategoriesSection";
 import type { BrandOption } from "@/components/shop-page/filters/BrandsSection";
 
-/** Category slugs that have products with color attributes. Towel Colors is shown on All Categories or when one of these is selected; hidden when a single category with no colors is selected. */
-const CATEGORIES_WITH_COLORS = ["kiwi-towels"];
+/** Category slugs that should keep the color filter visible when selected. */
+const CATEGORIES_WITH_COLORS: string[] = [];
 
 export type ShopFilterOptions = {
   categories: CategoryOption[];

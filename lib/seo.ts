@@ -3,7 +3,7 @@ import { getBaseUrl } from "@/lib/base-url";
 
 export const SITE_NAME = "thelittlemart.com";
 export const SITE_TAGLINE =
-  "Premium French products, including organic personal care and 100% cotton towels from Saint-Tropez for pools, showers, and the beach.";
+  "Curated everyday essentials across kitchenware, stationery, household items, condiments, personal care, and baby and kids categories.";
 
 export function getMetadataBase(): URL {
   return new URL(getBaseUrl());

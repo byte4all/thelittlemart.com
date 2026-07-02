@@ -90,7 +90,7 @@ const Header = () => {
           whileInView={{ y: "0", opacity: 1, rotate: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 2.3, duration: 0.8 }}
-          className="relative md:px-4 min-h-[448px] md:min-h-[428px] mb-6 md:mb-0 bg-cover bg-top xl:bg-[center_top_-1.6rem] bg-no-repeat bg-[url('/products/homepage/homepage-package.webp')] md:bg-[url('/products/homepage/homepage-package.webp')]"
+          className="hidden md:block relative md:px-4 min-h-[428px] bg-cover bg-top xl:bg-[center_top_-1.6rem] bg-no-repeat bg-[url('/products/homepage/homepage-package.webp')]"
         >
         </motion.section>
       </div>
