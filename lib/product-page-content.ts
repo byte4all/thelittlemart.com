@@ -1,234 +1,363 @@
 /**
- * Category-specific FAQ and Product Details (specs) for the product page.
- * Used to show relevant FAQs and specifications per category (towels, shampoo, etc.).
+ * Category-specific FAQ and Product Details (specs) for current catalog categories.
  */
 
 export type FaqItem = { question: string; answer: string };
 export type SpecItem = { label: string; value: string };
 
-/** Category key: derived from product categories (e.g. towel, shampoo, conditioner, body-wash, soap). */
 export type CategoryKey =
-  | "towel"
-  | "shampoo"
-  | "shampoo-colored"
-  | "shampoo-normal"
-  | "shampoo-soft"
-  | "shampoo-dandruff"
-  | "shampoo-kids"
-  | "conditioner"
-  | "body-wash"
-  | "body-soft-skin"
-  | "body-kids"
-  | "mixa-bebe"
-  | "soap"
+  | "stationery"
+  | "stationery-pen-and-pencils"
+  | "stationery-papers-filing"
+  | "stationery-geometry"
+  | "stationery-staplers-and-staples"
+  | "household-items"
+  | "household-items-cleaning-supplies"
+  | "household-items-laundry-and-drying"
+  | "household-items-insect-repellents"
+  | "kitchenware"
+  | "kitchenware-cooking-tools"
+  | "kitchenware-bakeware-and-ovenware"
+  | "kitchenware-bar-and-drinks"
+  | "kitchenware-dining"
+  | "kitchenware-candles-and-party"
+  | "kitchenware-kitchen-tools"
+  | "condiments"
+  | "condiments-french-salt"
+  | "condiments-oil-and-vinegars"
+  | "personal-care"
+  | "baby-kids"
   | "default";
 
-/** Options for admin dropdown: value is CategoryKey; empty string = Auto (from category). */
 export const TEMPLATE_OPTIONS: { value: CategoryKey | ""; label: string }[] = [
   { value: "", label: "Auto (from category)" },
-  { value: "towel", label: "Towel" },
-  { value: "shampoo", label: "Shampoo" },
-  { value: "shampoo-colored", label: "Shampoo (colored hair)" },
-  { value: "shampoo-normal", label: "Shampoo (normal hair)" },
-  { value: "shampoo-soft", label: "Shampoo (soft & gentle)" },
-  { value: "shampoo-dandruff", label: "Shampoo (dandruff care)" },
-  { value: "shampoo-kids", label: "Shampoo (kids)" },
-  { value: "conditioner", label: "Conditioner" },
-  { value: "body-wash", label: "Body wash" },
-  { value: "body-soft-skin", label: "Body wash – Body Soft Skin" },
-  { value: "body-kids", label: "Body wash – Kids" },
-  { value: "mixa-bebe", label: "Mixa Bebe (2-in-1 body & shampoo)" },
-  { value: "soap", label: "Soap" },
+  { value: "stationery", label: "Stationery (general)" },
+  { value: "stationery-pen-and-pencils", label: "Stationery - Pen & Pencils" },
+  { value: "stationery-papers-filing", label: "Stationery - Papers & Filing" },
+  { value: "stationery-geometry", label: "Stationery - Geometry" },
+  { value: "stationery-staplers-and-staples", label: "Stationery - Staplers & Staples" },
+  { value: "household-items", label: "Household Items (general)" },
+  { value: "household-items-cleaning-supplies", label: "Household - Cleaning Supplies" },
+  { value: "household-items-laundry-and-drying", label: "Household - Laundry & Drying" },
+  { value: "household-items-insect-repellents", label: "Household - Insect Repellents" },
+  { value: "kitchenware", label: "Kitchenware (general)" },
+  { value: "kitchenware-cooking-tools", label: "Kitchenware - Cooking Tools" },
+  { value: "kitchenware-bakeware-and-ovenware", label: "Kitchenware - Bakeware & Ovenware" },
+  { value: "kitchenware-bar-and-drinks", label: "Kitchenware - Bar & Drinks" },
+  { value: "kitchenware-dining", label: "Kitchenware - Dining" },
+  { value: "kitchenware-candles-and-party", label: "Kitchenware - Candles & Party" },
+  { value: "kitchenware-kitchen-tools", label: "Kitchenware - Kitchen Tools" },
+  { value: "condiments", label: "Condiments (general)" },
+  { value: "condiments-french-salt", label: "Condiments - French Salt" },
+  { value: "condiments-oil-and-vinegars", label: "Condiments - Oil & Vinegars" },
+  { value: "personal-care", label: "Personal Care" },
+  { value: "baby-kids", label: "Baby & Kids" },
   { value: "default", label: "Default" },
 ];
 
-/** Resolve category key from category slugs (e.g. from product.productCategories). */
+const RETURN_EXCHANGE_TEXT =
+  "You may return or exchange eligible items within 30 days of delivery. Items must be unused, in original packaging, and with proof of purchase. Refunds are processed to the original payment method within 5-10 business days after we receive the return.";
+
+/** Resolve category key from assigned category slugs. */
 export function getCategoryKey(categorySlugs: string[]): CategoryKey {
-  const lower = categorySlugs.map((s) => s.toLowerCase());
-  if (lower.some((s) => s.includes("towel"))) return "towel";
-  if (lower.some((s) => s.includes("shampoo"))) return "shampoo";
-  if (lower.some((s) => s.includes("conditioner"))) return "conditioner";
-  if (lower.some((s) => s.includes("body-wash") || s.includes("body wash"))) return "body-wash";
-  if (lower.some((s) => s.includes("soap"))) return "soap";
+  const lower = categorySlugs.map((s) => s.toLowerCase().trim());
+
+  // Hybrid strategy: check subcategory-specific keys first.
+  if (lower.includes("pen-and-pencils")) return "stationery-pen-and-pencils";
+  if (lower.includes("papers-filing")) return "stationery-papers-filing";
+  if (lower.includes("geometry")) return "stationery-geometry";
+  if (lower.includes("staplers-and-staples")) return "stationery-staplers-and-staples";
+
+  if (lower.includes("cleaning-supplies")) return "household-items-cleaning-supplies";
+  if (lower.includes("laundry-and-drying")) return "household-items-laundry-and-drying";
+  if (lower.includes("insect-repellents")) return "household-items-insect-repellents";
+
+  if (lower.includes("cooking-tools")) return "kitchenware-cooking-tools";
+  if (lower.includes("bakeware-and-ovenware")) return "kitchenware-bakeware-and-ovenware";
+  if (lower.includes("bar-and-drinks")) return "kitchenware-bar-and-drinks";
+  if (lower.includes("dining")) return "kitchenware-dining";
+  if (lower.includes("candles-and-party")) return "kitchenware-candles-and-party";
+  if (lower.includes("kitchen-tools")) return "kitchenware-kitchen-tools";
+
+  if (lower.includes("french-salt")) return "condiments-french-salt";
+  if (lower.includes("oil-and-vinegars")) return "condiments-oil-and-vinegars";
+
+  if (lower.includes("stationery")) return "stationery";
+  if (lower.includes("household-items")) return "household-items";
+  if (lower.includes("kitchenware")) return "kitchenware";
+  if (lower.includes("condiments")) return "condiments";
+  if (lower.includes("personal-care")) return "personal-care";
+  if (lower.includes("baby-kids")) return "baby-kids";
+
   return "default";
 }
 
 const FAQ_BY_CATEGORY: Record<CategoryKey, FaqItem[]> = {
-  towel: [
-    { question: "What material are these towels made of?", answer: "Our towels are made from high-quality cotton or cotton blends for softness and absorbency. Specific composition is listed in the product description." },
-    { question: "How should I care for my towel?", answer: "Machine wash in warm water with like colors. Tumble dry low or hang dry. Avoid bleach to preserve color and softness." },
-    { question: "What sizes do you offer?", answer: "We offer bath towels, hand towels, and face towels. Dimensions are listed in the product specifications." },
-    { question: "Are these towels suitable for sensitive skin?", answer: "Yes. Our towels are gentle and suitable for daily use. We recommend washing before first use." },
-    { question: "What is your return policy for towels?", answer: "No return once bought. No return is available." },
+  stationery: [
+    { question: "Who are these stationery products suitable for?", answer: "Our stationery range is suitable for school, office, and home use. Product pages show specific sizes and formats where relevant." },
+    { question: "Are these items sold individually or in packs?", answer: "Both. Some items are sold as single pieces while others are sold in multipacks. Check the product title and description for exact quantity." },
+    { question: "How can I choose the right stationery item?", answer: "Use the product description and images to confirm dimensions, paper format, tip type, or refill compatibility before ordering." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  shampoo: [
-    { question: "What hair types is this shampoo suitable for?", answer: "This shampoo is formulated to suit a range of hair types." },
-    { question: "How often should I use this shampoo?", answer: "Most of our shampoos are safe for daily use. For best results, follow the usage instructions on the bottle." },
-    { question: "Does it work with color-treated hair?", answer: "Yes ! Many of our shampoos are gentle enough for color-treated hair." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "stationery-pen-and-pencils": [
+    { question: "Are these pens and pencils suitable for daily writing?", answer: "Yes. They are selected for everyday school and office writing, with product descriptions indicating lead type, ink type, or tip category." },
+    { question: "Do writing instruments come pre-filled or ready to use?", answer: "Most products are ready to use. Refill-based products are labeled clearly in the product name and description." },
+    { question: "Can I find color information before ordering?", answer: "Yes. Available colors and product images are shown on each product page when color variants apply." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "shampoo-soft": [
-    { question: "What hair types is this shampoo suitable for?", answer: "This soft shampoo is formulated to be very gentle, suitable for everyday use on normal to sensitive hair and scalp." },
-    { question: "Is this shampoo gentle on the scalp?", answer: "Yes. It is designed to cleanse softly while respecting the scalp and hair, helping to avoid a tight or dry feeling after washing." },
-    { question: "How often can I use this shampoo?", answer: "You can use it daily or as often as your hair needs washing, thanks to its soft and mild formula." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "stationery-papers-filing": [
+    { question: "What paper formats are available in this category?", answer: "Products include practical formats such as A4 and card sizes. Exact dimensions and quantity per pack are listed on each product page." },
+    { question: "Are these products compatible with standard binders and folders?", answer: "Most filing products are designed for common binder formats. Please verify compatibility details in each product description." },
+    { question: "How do I confirm sheet count before purchase?", answer: "Sheet or unit count is stated in the product title and description." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "shampoo-normal": [
-    { question: "What hair types is this shampoo suitable for?", answer: "This normal shampoo is formulated for everyday cleansing of normal hair, leaving it clean and comfortable without dryness." },
-    { question: "How often should I use this shampoo?", answer: "It is gentle enough for daily use. Adjust frequency based on how often your hair needs washing." },
-    { question: "Does it work with color-treated hair?", answer: "Yes. It is mild and suitable for most hair types, including many color-treated hair types. Always check the full product description for any specific notes." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "stationery-geometry": [
+    { question: "Are these geometry tools suitable for school use?", answer: "Yes. Items such as rulers, protractors, set squares, and compasses are suitable for classroom and homework use." },
+    { question: "Are measurement markings visible and accurate?", answer: "Products are selected for clear, readable markings. Refer to product images for visual confirmation of scale style." },
+    { question: "What materials are these tools made from?", answer: "Most geometry tools are durable plastics or standard school-safe materials; exact material is listed when provided by the supplier." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "shampoo-dandruff": [
-    { question: "Is this shampoo suitable for dandruff or flaky scalp?", answer: "Yes. This anti-dandruff shampoo is formulated to help reduce visible flakes and ease scalp discomfort with regular use." },
-    { question: "How often should I use this shampoo?", answer: "Use 2–3 times per week or as needed. For best results, massage into the scalp, leave on for a short time, then rinse thoroughly." },
-    { question: "Can I use it on all hair types?", answer: "Yes. It is suitable for most hair types. If you have very sensitive scalp or a medical condition, consult a healthcare professional before use." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "stationery-staplers-and-staples": [
+    { question: "How do I know if staples are compatible with my stapler?", answer: "Check the staple size noted in the product title and compare with your stapler model requirements." },
+    { question: "Do staplers include starter staples?", answer: "Some staplers include starter staples while others do not. This is indicated on the product page." },
+    { question: "Are refill staples sold separately?", answer: "Yes. Staple refill products are available and listed with quantity per box or pack." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "shampoo-kids": [
-    { question: "Who is this shampoo designed for?", answer: "This shampoo is specially created for kids’ delicate hair and scalp. It is gentle, soft, and respects the natural balance of the hair." },
-    { question: "Is this shampoo safe for young children?", answer: "Yes. It is gentle enough for young children and can be used for kids under 3 years old. As with any product, avoid contact with eyes and rinse immediately if it occurs." },
-    { question: "How should I use this shampoo on kids?", answer: "Wet the child’s hair, apply a small amount of shampoo, gently massage into the scalp, then rinse thoroughly. Repeat if needed." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "household-items": [
+    { question: "What type of products are in Household Items?", answer: "This category includes practical home essentials for cleaning, laundry, and everyday household maintenance." },
+    { question: "How do I choose the right household product?", answer: "Check intended use, quantity, and safety instructions in the product description before purchase." },
+    { question: "Can I use these products daily?", answer: "Most products are designed for routine use, but always follow care and safety instructions shown on packaging and product pages." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "shampoo-colored": [
-    { question: "What hair types is this shampoo suitable for?", answer: "This shampoo is formulated specifically for color-treated or colored hair. It helps protect and extend the life of your color while keeping hair healthy." },
-    { question: "How often should I use this shampoo?", answer: "Most of our shampoos are safe for daily use. For best results, follow the usage instructions on the bottle." },
-    { question: "Does it work with color-treated hair?", answer: "Yes. This shampoo is designed for color-treated hair and is gentle enough for regular use." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "household-items-cleaning-supplies": [
+    { question: "Which surfaces are these cleaning products suitable for?", answer: "Surface suitability varies by product. Please read each product description to confirm recommended uses and avoid incompatible surfaces." },
+    { question: "Are these products intended for household use?", answer: "Yes. Products in this category are selected for regular home cleaning tasks." },
+    { question: "Do cleaning products include usage guidance?", answer: "Yes. Usage direction is provided in product descriptions and should be followed for best results." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  conditioner: [
-    { question: "What hair types is this conditioner for?", answer: "This conditioner is designed to work with any variety of hair types." },
-    { question: "How do I use it for best results?", answer: "Apply after shampooing to damp hair, focus on mid-lengths to ends, leave on for 1–2 minutes, then rinse thoroughly." },
-    { question: "Can I use it with the matching shampoo?", answer: "Yes. Using the same line of shampoo and conditioner often gives the best results and consistent scent." },
-    { question: "Is it suitable for fine or oily hair?", answer: "Yes ! Many of our conditioners are lightweight and won’t weigh hair down." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "household-items-laundry-and-drying": [
+    { question: "What products are included in laundry and drying?", answer: "This section includes practical accessories such as clothespins and hanging clips for everyday laundry use." },
+    { question: "Are these items reusable?", answer: "Yes. Most products in this section are durable and intended for repeated use." },
+    { question: "Can they be used indoors and outdoors?", answer: "Most laundry accessories can be used both indoors and outdoors; check product details where needed." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "body-wash": [
-    { question: "What skin types is this body wash suitable for?", answer: "Our body washes are formulated to be gentle for most skin types. Check the product description for sensitive or dry skin options." },
-    { question: "How do I use it?", answer: "Apply to wet skin with a loofah or hands, lather, then rinse. Avoid contact with eyes." },
-    { question: "Is it soap-free or moisturizing?", answer: "Formula details (e.g. soap-free, moisturizing) are listed in the product description and specifications." },
-    { question: "Does the scent last after showering?", answer: "Scent is designed to be noticeable in the shower and may leave a light fragrance on skin. Strength varies by variant." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "household-items-insect-repellents": [
+    { question: "What kind of pest-control products are in this section?", answer: "This section includes household insect-control products intended for crawling insects and common home pest situations." },
+    { question: "How should these products be used safely?", answer: "Follow all label instructions and keep products away from children, food-contact surfaces, and direct inhalation when not indicated." },
+    { question: "Can I use these products indoors?", answer: "Usage setting depends on each product. Check the product page and label instructions for indoor/outdoor suitability." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "body-soft-skin": [
-    { question: "What skin types is this body wash suitable for?", answer: "This Body Soft Skin body wash is especially suitable for sensitive skin, helping to cleanse gently while respecting the skin barrier." },
-    { question: "How do I use it?", answer: "Apply to wet skin with a loofah or hands, gently massage to lather, then rinse thoroughly. Avoid contact with eyes." },
-    { question: "Is it suitable for kids?", answer: "Yes. This body wash is suitable for the family and can be used for children from 3 years old." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  kitchenware: [
+    { question: "What does the Kitchenware category include?", answer: "Kitchenware includes cooking tools, bakeware, drink accessories, dining tools, and party table accessories." },
+    { question: "Are these products suitable for everyday home use?", answer: "Yes. Products are selected for daily household kitchen and dining use unless otherwise stated." },
+    { question: "Can I find dimensions and capacities before ordering?", answer: "Yes. Product pages provide relevant dimensions, capacities, and usage notes where available." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "body-kids": [
-    { question: "Who is this body wash designed for?", answer: "This kids body wash is specially created for children’s delicate skin, with a gentle formula that respects the skin barrier." },
-    { question: "Is it suitable for young children?", answer: "Yes. It is suitable for kids and can be used from 3 years old. For children under 3, please consult your healthcare professional before use." },
-    { question: "How should I use this body wash on kids?", answer: "Apply a small amount to wet skin, gently lather with your hands or a soft washcloth, then rinse thoroughly. Avoid contact with eyes." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "kitchenware-cooking-tools": [
+    { question: "What products are considered cooking tools?", answer: "Examples include utensils, preparation tools, and serving tools used directly during food preparation." },
+    { question: "Are these safe for regular kitchen tasks?", answer: "Yes. They are intended for common household cooking and prep use. Check material notes per product." },
+    { question: "How should I care for cooking tools?", answer: "Care instructions vary by material. Refer to each product description and packaging guidance for cleaning recommendations." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  "mixa-bebe": [
-    { question: "What is this product designed for?", answer: "This 2-in-1 Mixa Bebe wash is made to gently cleanse both hair and body in one step, for babies, kids, and adults with delicate skin." },
-    { question: "From what age can it be used?", answer: "It is suitable for daily use on babies and children, and also comfortable for adults with sensitive skin. As with any baby product, avoid direct contact with the eyes and rinse well." },
-    { question: "Does it contain soap?", answer: "No. The formula is soap-free and designed to clean hair and skin very delicately without stripping natural moisture." },
-    { question: "What happens if it gets in the eyes?", answer: "The formula is developed to be gentle and not make the eyes hurt if some product gets inside. Still, rinse the eyes immediately with plenty of clean water." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "kitchenware-bakeware-and-ovenware": [
+    { question: "Are these dishes oven-safe?", answer: "Bakeware and ovenware products are listed with intended heat use. Check each product page for usage compatibility before purchase." },
+    { question: "Can these be used in microwave or dishwasher?", answer: "Compatibility differs by product. Refer to each product description for microwave and dishwasher guidance." },
+    { question: "How do I choose the right dish size?", answer: "Use the dimensions in the title/specification to match your recipe portion and oven space." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
-  soap: [
-    { question: "What is this soap made of?", answer: "Our bar soaps are made with quality ingredients for cleansing and mildness. Exact ingredients and claims are in the product description." },
-    { question: "How should I store the soap?", answer: "Keep the bar in a dry soap holder between uses so it lasts longer." },
-    { question: "Is it suitable for face and body?", answer: "Yes ! Many of our soaps are gentle enough for face and body." },
-    { question: "How long does one bar typically last?", answer: "Usage varies by person. With normal use, a single bar often lasts several weeks." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+  "kitchenware-bar-and-drinks": [
+    { question: "What products are included in Bar & Drinks?", answer: "This section includes drinkware and bar accessories such as glasses, corkscrews, stoppers, and measuring tools." },
+    { question: "Are these items suitable for hosting and events?", answer: "Yes. Products are chosen for practical use during gatherings, celebrations, and everyday beverage service." },
+    { question: "Do product pages mention capacity and quantity?", answer: "Yes. Volume and pack quantity are specified where relevant." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
+  ],
+  "kitchenware-dining": [
+    { question: "What kind of dining products are available?", answer: "Dining products include table-use accessories and specialty serving tools for home meals and occasions." },
+    { question: "Are these products reusable?", answer: "Most products in this section are reusable unless specifically labeled as disposable." },
+    { question: "How do I verify what is included in a set?", answer: "Set quantity is stated in the product title and description." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
+  ],
+  "kitchenware-candles-and-party": [
+    { question: "What products are in Candles & Party?", answer: "This section includes celebration candles and related party table accessories." },
+    { question: "Are these products intended for occasional use?", answer: "Yes. Most items are designed for birthdays, parties, and special events." },
+    { question: "Are safety instructions provided?", answer: "Please follow standard candle and party safety guidance and any notes shown on product packaging." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
+  ],
+  "kitchenware-kitchen-tools": [
+    { question: "How are kitchen tools different from cooking tools?", answer: "Kitchen tools here focus on measurement, utility, and prep support tasks rather than direct stovetop utensils." },
+    { question: "Are these tools easy to clean?", answer: "Most are designed for practical kitchen maintenance. Check each product page for care instructions." },
+    { question: "Can I use these in a home kitchen setup?", answer: "Yes. They are curated for everyday home kitchen use." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
+  ],
+  condiments: [
+    { question: "What products are in the Condiments category?", answer: "Condiments include gourmet salts, vinegars, and flavor-enhancing pantry items." },
+    { question: "How should condiments be stored?", answer: "Store in a cool, dry place and keep containers sealed after opening unless product labels state otherwise." },
+    { question: "Can I use these for daily cooking?", answer: "Yes. Condiments are intended for regular seasoning, finishing, and recipe use based on product type." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
+  ],
+  "condiments-french-salt": [
+    { question: "What is French salt used for?", answer: "French salts can be used for cooking, seasoning, or finishing dishes depending on grain size and style." },
+    { question: "What is the difference between coarse and fine salt?", answer: "Coarse salt is often used in cooking or grinding, while fine salt is easier for direct table use and quick seasoning." },
+    { question: "How should I store these salts?", answer: "Keep salts in a dry, airtight container away from moisture." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
+  ],
+  "condiments-oil-and-vinegars": [
+    { question: "How can I use these vinegars in cooking?", answer: "They are suitable for dressings, marinades, seasoning, and flavor balancing in both cold and cooked dishes." },
+    { question: "Do these products include volume information?", answer: "Yes. Product pages list bottle volume where provided by supplier data." },
+    { question: "How should I store oils and vinegars?", answer: "Store tightly closed in a cool place away from direct sunlight to preserve quality." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
+  ],
+  "personal-care": [
+    { question: "What products are included in Personal Care?", answer: "This category currently includes daily hygiene essentials such as toilet paper and related home personal-use items." },
+    { question: "Are these suitable for everyday home use?", answer: "Yes. Products are selected for daily household use and convenience." },
+    { question: "How do I check pack quantity before ordering?", answer: "Pack count and format are shown in the product title and description." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
+  ],
+  "baby-kids": [
+    { question: "What type of products are in Baby & Kids?", answer: "This category includes child and family-oriented essentials. Please review each product page for age or usage guidance when relevant." },
+    { question: "How do I choose the right product for my child?", answer: "Check product description, usage notes, and any age-specific guidance before purchase." },
+    { question: "Can adults use some products in this category?", answer: "Some items may be family-friendly; always rely on each product's intended usage description." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
   default: [
-    { question: "What are the main features of this product?", answer: "Key features and benefits are described in the product description and specifications above." },
-    { question: "How should I use or care for this product?", answer: "Follow the usage and care instructions on the product packaging or in the product description." },
-    { question: "What is your shipping and delivery policy?", answer: "We offer standard and express shipping. Delivery times and costs are shown at checkout." },
-    { question: "What is your return policy?", answer: "No return once bought. No return is available." },
+    { question: "How do I know if this product is right for my needs?", answer: "Review the product description, images, and specifications for intended use, size, and quantity before ordering." },
+    { question: "How should I care for or store this product?", answer: "Follow instructions on product packaging and any care notes shown on the product page." },
+    { question: "Where can I check shipping details?", answer: "Shipping timelines and charges are shown during checkout based on your location and order." },
+    { question: "What is your return and exchange policy?", answer: RETURN_EXCHANGE_TEXT },
   ],
 };
 
 const SPECS_BY_CATEGORY: Record<CategoryKey, SpecItem[]> = {
-  towel: [
-    { label: "Material", value: "Cotton or cotton blend" },
-    { label: "Care", value: "Machine wash warm, tumble dry low" },
-    { label: "Weight", value: "See product description" },
-    { label: "Size", value: "See product dimensions" },
+  stationery: [
+    { label: "Use case", value: "School, office, and home organization" },
+    { label: "Format", value: "Varies by product" },
+    { label: "Pack details", value: "See product title and description" },
+    { label: "Care", value: "Store in a dry place" },
   ],
-  shampoo: [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Hair type", value: "See product description" },
-    { label: "Key benefits", value: "Cleansing, care as described" },
-    { label: "Usage", value: "Apply to wet hair, lather, rinse" },
+  "stationery-pen-and-pencils": [
+    { label: "Writing type", value: "Pen, pencil, or marker depending on product" },
+    { label: "Color", value: "See product images and available colors" },
+    { label: "Quantity", value: "Single item or pack as listed" },
+    { label: "Use", value: "Daily writing and drawing tasks" },
   ],
-  "shampoo-soft": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Hair type", value: "Normal to sensitive hair and scalp" },
-    { label: "Key benefits", value: "Soft, gentle cleansing that respects the scalp and helps keep hair comfortable and smooth" },
-    { label: "Usage", value: "Apply to wet hair, massage gently into scalp and hair, then rinse thoroughly" },
+  "stationery-papers-filing": [
+    { label: "Format", value: "A4/card sizes depending on product" },
+    { label: "Quantity", value: "See pack count in product title" },
+    { label: "Compatibility", value: "Standard filing/binder formats where noted" },
+    { label: "Use", value: "Filing, notes, and document organization" },
   ],
-  "shampoo-normal": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Hair type", value: "Normal hair" },
-    { label: "Key benefits", value: "Daily cleansing for normal hair, helps keep hair fresh without over-drying" },
-    { label: "Usage", value: "Apply to wet hair, gently massage into scalp and hair, then rinse thoroughly" },
+  "stationery-geometry": [
+    { label: "Tool type", value: "Ruler, protractor, set square, or compass" },
+    { label: "Measurement", value: "Graduated markings for school/office use" },
+    { label: "Material", value: "Durable plastic or standard tool material" },
+    { label: "Use", value: "Geometry and technical drawing" },
   ],
-  "shampoo-dandruff": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Hair type", value: "Most hair types, especially those with dandruff-prone scalp" },
-    { label: "Key benefits", value: "Helps reduce visible dandruff flakes and relieve scalp discomfort with regular use" },
-    { label: "Usage", value: "Apply to wet hair, massage into scalp, leave for a short time, then rinse well" },
+  "stationery-staplers-and-staples": [
+    { label: "Category", value: "Staplers and refill staples" },
+    { label: "Size", value: "Staple size indicated per product" },
+    { label: "Quantity", value: "Pack/box count shown per item" },
+    { label: "Use", value: "Document binding for school and office" },
   ],
-  "shampoo-kids": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Hair type", value: "Kids’ delicate hair and scalp" },
-    { label: "Key benefits", value: "Gentle and soft shampoo that respects kids’ hair and scalp, suitable even for kids under 3 years old" },
-    { label: "Usage", value: "Apply a small amount to wet hair, gently massage, then rinse carefully" },
+  "household-items": [
+    { label: "Category", value: "Home maintenance essentials" },
+    { label: "Use", value: "Cleaning, laundry, and upkeep tasks" },
+    { label: "Safety", value: "Follow product-specific usage guidance" },
+    { label: "Storage", value: "Keep in dry, appropriate household storage" },
   ],
-  "shampoo-colored": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Hair type", value: "Colored / color-treated / highlighted" },
-    { label: "Key benefits", value: "Color protection, cleansing, care as described" },
-    { label: "Usage", value: "Apply to wet hair, lather, rinse" },
+  "household-items-cleaning-supplies": [
+    { label: "Use", value: "General home surface and floor cleaning" },
+    { label: "Application", value: "See product instructions for suitable surfaces" },
+    { label: "Safety", value: "Use as directed on label" },
+    { label: "Storage", value: "Store away from children and food prep areas" },
   ],
-  conditioner: [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Hair type", value: "See product description" },
-    { label: "Key benefits", value: "Conditioning, detangling" },
-    { label: "Usage", value: "After shampoo, apply to lengths, rinse" },
+  "household-items-laundry-and-drying": [
+    { label: "Use", value: "Laundry support and drying accessories" },
+    { label: "Material", value: "Varies by item (wood, plastic, or mixed)" },
+    { label: "Durability", value: "Designed for repeated household use" },
+    { label: "Storage", value: "Store dry between uses" },
   ],
-  "body-wash": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Skin type", value: "See product description" },
-    { label: "Scent", value: "As per variant" },
-    { label: "Usage", value: "Apply to wet skin, lather, rinse" },
+  "household-items-insect-repellents": [
+    { label: "Use", value: "Household insect control" },
+    { label: "Target", value: "Common crawling insects (product dependent)" },
+    { label: "Application", value: "Indoor/outdoor as specified per product" },
+    { label: "Safety", value: "Follow all label precautions" },
   ],
-  "body-soft-skin": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Skin type", value: "Sensitive and dry skin, suitable for family use from 3 years old" },
-    { label: "Scent", value: "As per Body Soft Skin variant" },
-    { label: "Usage", value: "Apply to wet skin, lather gently, then rinse. Ideal for daily use on sensitive and dry skin." },
+  kitchenware: [
+    { label: "Category", value: "Cooking, serving, and kitchen utility products" },
+    { label: "Material", value: "Varies by product (glass, steel, wood, etc.)" },
+    { label: "Use", value: "Everyday food prep, serving, and hosting" },
+    { label: "Care", value: "Refer to individual product guidance" },
   ],
-  "body-kids": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Skin type", value: "Kids’ delicate skin, suitable from 3 years old" },
-    { label: "Scent", value: "As per kids body wash variant" },
-    { label: "Usage", value: "Apply a small amount to wet skin, lather gently, then rinse. Ideal for daily use on children’s skin." },
+  "kitchenware-cooking-tools": [
+    { label: "Use", value: "Food preparation and cooking support" },
+    { label: "Material", value: "Wood, stainless steel, or mixed" },
+    { label: "Compatibility", value: "Typical home cookware and prep tasks" },
+    { label: "Care", value: "Clean according to product material guidance" },
   ],
-  "mixa-bebe": [
-    { label: "Volume", value: "See bottle size" },
-    { label: "Skin type", value: "Delicate and sensitive skin for babies, kids, and adults" },
-    { label: "Hair type", value: "Fine and delicate hair, suitable for the whole family" },
-    { label: "Key benefits", value: "2-in-1 soap-free formula that gently cleans hair and body in one motion, developed not to sting eyes" },
-    { label: "Usage", value: "Apply to wet hair and body, lather gently, then rinse thoroughly. Suitable for everyday cleansing." },
+  "kitchenware-bakeware-and-ovenware": [
+    { label: "Use", value: "Baking, roasting, and oven preparation" },
+    { label: "Size", value: "See listed dimensions for each dish" },
+    { label: "Compatibility", value: "Oven/microwave/dishwasher as specified per item" },
+    { label: "Care", value: "Avoid sudden thermal shock for glassware" },
   ],
-  soap: [
-    { label: "Weight", value: "See bar weight" },
-    { label: "Skin type", value: "See product description" },
-    { label: "Scent", value: "As per variant" },
-    { label: "Usage", value: "Apply to wet skin, lather, rinse" },
+  "kitchenware-bar-and-drinks": [
+    { label: "Use", value: "Drink service and bar accessories" },
+    { label: "Capacity", value: "See product volume/capacity details" },
+    { label: "Set size", value: "Quantity per pack indicated on each item" },
+    { label: "Care", value: "Handle and clean according to material" },
+  ],
+  "kitchenware-dining": [
+    { label: "Use", value: "Dining accessories and table service tools" },
+    { label: "Set details", value: "Number of pieces listed in product title" },
+    { label: "Material", value: "See product specifications" },
+    { label: "Care", value: "Follow material-specific cleaning instructions" },
+  ],
+  "kitchenware-candles-and-party": [
+    { label: "Use", value: "Celebrations and party table setup" },
+    { label: "Quantity", value: "Pack size shown per product" },
+    { label: "Safety", value: "Keep candles away from open drafts and children" },
+    { label: "Storage", value: "Store in a cool, dry place" },
+  ],
+  "kitchenware-kitchen-tools": [
+    { label: "Use", value: "Measuring and kitchen utility support" },
+    { label: "Accuracy", value: "Product-specific measurement utility where applicable" },
+    { label: "Material", value: "See product details" },
+    { label: "Care", value: "Clean and dry after use" },
+  ],
+  condiments: [
+    { label: "Category", value: "Seasoning and flavor products" },
+    { label: "Use", value: "Cooking, finishing, and taste balancing" },
+    { label: "Storage", value: "Store sealed in a cool, dry place" },
+    { label: "Origin details", value: "See product description where provided" },
+  ],
+  "condiments-french-salt": [
+    { label: "Type", value: "Fine, coarse, or fleur de sel variants" },
+    { label: "Use", value: "Cooking or finishing depending on grain type" },
+    { label: "Storage", value: "Airtight container away from moisture" },
+    { label: "Pack size", value: "See product title for weight" },
+  ],
+  "condiments-oil-and-vinegars": [
+    { label: "Type", value: "Vinegar and related flavoring products" },
+    { label: "Use", value: "Dressings, marinades, and seasoning" },
+    { label: "Volume", value: "See product page for bottle size" },
+    { label: "Storage", value: "Keep sealed away from direct heat/sunlight" },
+  ],
+  "personal-care": [
+    { label: "Category", value: "Daily hygiene essentials" },
+    { label: "Use", value: "Routine personal or household hygiene use" },
+    { label: "Pack details", value: "See quantity on product title/description" },
+    { label: "Storage", value: "Store dry and clean" },
+  ],
+  "baby-kids": [
+    { label: "Category", value: "Family and child-focused essentials" },
+    { label: "Use", value: "Refer to product-specific intended use" },
+    { label: "Guidance", value: "Check age/usage notes where provided" },
+    { label: "Storage", value: "Store safely out of children's reach unless in use" },
   ],
   default: [
     { label: "Details", value: "See product description" },
-    { label: "Care / usage", value: "Follow packaging instructions" },
-    { label: "Shipping", value: "See checkout for options" },
+    { label: "Use", value: "Follow instructions on packaging and product page" },
+    { label: "Shipping", value: "Shown at checkout based on delivery address" },
   ],
 };
 

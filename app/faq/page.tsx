@@ -13,32 +13,27 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default function FAQPage() {
+  const returnExchangeText =
+    "You may return or exchange eligible items within 30 days of delivery. Items must be unused, in original packaging, and with proof of purchase. Refunds will be processed to the original payment method within 5-10 business days after we receive the return. For exchanges, please contact Customer Support to arrange size or product exchanges.";
+
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: [
       {
         "@type": "Question",
-        name: "What is thelittlemart?",
+        name: "What products does thelittlemart currently offer?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "thelittlemart offers quality essentials for your body and home, from luxurious soaps to Saint-Tropez inspired towels. We focus on comfort, quality, and timeless style.",
+          text: "Our current catalog focuses on practical essentials including Stationery, Household Items, Kitchenware, Condiments, Personal Care, and Baby & Kids.",
         },
       },
       {
         "@type": "Question",
-        name: "How do I create an account?",
+        name: "How can I get support?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "You can sign up from the Sign In page. An account lets you save addresses, view order history, and track orders.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "How can I get help?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Visit our Customer Support or Contact Us page for assistance.",
+          text: "You can contact us through Customer Support or Contact Us. For order-related requests, include your order number for faster assistance.",
         },
       },
       {
@@ -46,7 +41,7 @@ export default function FAQPage() {
         name: "What payment methods do you accept?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "We accept major credit and debit cards (Visa, Mastercard), PayPal, Apple Pay, and Google Pay. Payment is processed securely at checkout.",
+          text: "We accept bank transfer, duitnow,major credit and debit cards (Visa, Mastercard). Payment is processed securely at checkout.",
         },
       },
       {
@@ -70,23 +65,23 @@ export default function FAQPage() {
         name: "Where do you ship?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "We ship within Malaysia. Delivery times and fees are shown at checkout based on your location.",
+          text: "We currently ship within Malaysia. Shipping fees and delivery estimates are shown at checkout.",
         },
       },
       {
         "@type": "Question",
-        name: "How long does shipping take?",
+        name: "Do you offer pickup and shipping?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Standard delivery typically takes 3-7 business days after your order is shipped. You'll receive a tracking number by email when your order is dispatched.",
+          text: "Yes. Depending on your order and location, available fulfillment options are shown during checkout.",
         },
       },
       {
         "@type": "Question",
-        name: "How do I track my order?",
+        name: "What is your return and exchange policy?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Use the tracking link in your shipping confirmation email, or check your order status in your account or on our Track My Order page.",
+          text: returnExchangeText,
         },
       },
     ],
@@ -116,11 +111,17 @@ export default function FAQPage() {
         <a href="#general" className={s.link}>
           General FAQ
         </a>
-        <a href="#payment-billing" className={s.link}>
-          Payment & Billing
+        <a href="#orders-payment" className={s.link}>
+          Orders & Payment
         </a>
-        <a href="#shipping" className={s.link}>
-          Shipping Questions
+        <a href="#shipping-pickup" className={s.link}>
+          Shipping & Pickup
+        </a>
+        <a href="#returns-exchanges" className={s.link}>
+          Returns & Exchanges
+        </a>
+        <a href="#products" className={s.link}>
+          Product Categories
         </a>
       </nav>
 
@@ -129,24 +130,17 @@ export default function FAQPage() {
           <h2 className={s.h2}>General FAQ</h2>
           <div className="space-y-6">
             <div>
-              <h3 className={s.h3}>What is thelittlemart?</h3>
+              <h3 className={s.h3}>What products does thelittlemart currently offer?</h3>
               <p className={s.p}>
-                thelittlemart offers quality essentials for your body and home, from
-                luxurious soaps to Saint-Tropez inspired towels. We focus on
-                comfort, quality, and timeless style.
+                Our current catalog focuses on practical essentials including
+                Stationery, Household Items, Kitchenware, Condiments, Personal
+                Care, and Baby & Kids.
               </p>
             </div>
             <div>
-              <h3 className={s.h3}>How do I create an account?</h3>
+              <h3 className={s.h3}>How can I get support?</h3>
               <p className={s.p}>
-                You can sign up from the Sign In page. An account lets you save
-                addresses, view order history, and track orders.
-              </p>
-            </div>
-            <div>
-              <h3 className={s.h3}>How can I get help?</h3>
-              <p className={s.p}>
-                Visit our{" "}
+                Visit{" "}
                 <Link href="/customer-support" className={s.link}>
                   Customer Support
                 </Link>{" "}
@@ -154,58 +148,55 @@ export default function FAQPage() {
                 <Link href="/contact-us" className={s.link}>
                   Contact Us
                 </Link>{" "}
-                page for assistance.
+                for assistance. For order issues, include your order number so
+                we can help faster.
               </p>
             </div>
           </div>
         </section>
 
-        <section id="payment-billing" className={s.section}>
-          <h2 className={s.h2}>Payment & Billing</h2>
+        <section id="orders-payment" className={s.section}>
+          <h2 className={s.h2}>Orders & Payment</h2>
           <div className="space-y-6">
             <div>
               <h3 className={s.h3}>What payment methods do you accept?</h3>
               <p className={s.p}>
                 We accept major credit and debit cards (Visa, Mastercard),
-                PayPal, Apple Pay, and Google Pay. Payment is processed securely
-                at checkout.
+                PayPal, Apple Pay, and Google Pay.
               </p>
             </div>
             <div>
-              <h3 className={s.h3}>When will I be charged?</h3>
+              <h3 className={s.h3}>Can I review my order after checkout?</h3>
               <p className={s.p}>
-                Your payment method is charged when your order is placed. For
-                pre-orders or backorders, we may charge at shipment depending on
-                the product.
+                Yes. You can review order details in your account, and you will
+                also receive order emails with key updates.
               </p>
             </div>
             <div>
-              <h3 className={s.h3}>Can I get an invoice?</h3>
+              <h3 className={s.h3}>Can I get a receipt or invoice reference?</h3>
               <p className={s.p}>
-                Yes. After your order is placed, you'll receive an order
-                confirmation email that can serve as a receipt. You can also
-                view order details in your account.
+                Yes. Your order confirmation email serves as your receipt, and
+                order details remain available in your account history.
               </p>
             </div>
           </div>
         </section>
 
-        <section id="shipping" className={s.section}>
-          <h2 className={s.h2}>Shipping Questions</h2>
+        <section id="shipping-pickup" className={s.section}>
+          <h2 className={s.h2}>Shipping & Pickup</h2>
           <div className="space-y-6">
             <div>
               <h3 className={s.h3}>Where do you ship?</h3>
               <p className={s.p}>
-                We ship within Malaysia. Delivery times and fees are shown at
-                checkout based on your location.
+                We currently ship within Malaysia. Delivery estimates and
+                shipping fees are shown during checkout.
               </p>
             </div>
             <div>
-              <h3 className={s.h3}>How long does shipping take?</h3>
+              <h3 className={s.h3}>Do you offer pickup as well as shipping?</h3>
               <p className={s.p}>
-                Standard delivery typically takes 3–7 business days after your
-                order is shipped. You'll receive a tracking number by email when
-                your order is dispatched.
+                Yes. Depending on your order, available fulfillment options are
+                shown at checkout.
               </p>
             </div>
             <div>
@@ -221,6 +212,48 @@ export default function FAQPage() {
                   Track My Order
                 </Link>{" "}
                 page.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="returns-exchanges" className={s.section}>
+          <h2 className={s.h2}>Returns & Exchanges</h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className={s.h3}>What is your return and exchange policy?</h3>
+              <p className={s.p}>{returnExchangeText}</p>
+            </div>
+            <div>
+              <h3 className={s.h3}>Where can I read the full policy?</h3>
+              <p className={s.p}>
+                Please refer to our{" "}
+                <Link href="/terms-of-service#return-exchange" className={s.link}>
+                  Terms of Service
+                </Link>{" "}
+                for the full return and exchange terms.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="products" className={s.section}>
+          <h2 className={s.h2}>Product Categories</h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className={s.h3}>How are product FAQs matched to items?</h3>
+              <p className={s.p}>
+                Product-page FAQs are matched to each item's current category or
+                subcategory, such as Kitchenware, Stationery, Household Items,
+                Condiments, Personal Care, and Baby & Kids.
+              </p>
+            </div>
+            <div>
+              <h3 className={s.h3}>Why are FAQs different between products?</h3>
+              <p className={s.p}>
+                Some subcategories use specialized FAQ templates for clearer
+                guidance. For example, Cleaning Supplies, French Salt, or Pen &
+                Pencils may show more specific usage answers.
               </p>
             </div>
           </div>
