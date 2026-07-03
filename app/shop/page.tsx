@@ -277,21 +277,7 @@ export default async function ShopPage({
       <div className="max-w-frame mx-auto px-4 xl:px-0">
         <hr className="h-[1px] border-t-black/10 mb-5 sm:mb-6" />
         <BreadcrumbShop
-          categoryName={
-            viewBrands
-              ? undefined
-              : category
-                ? (() => {
-                    const parent = options.categories.find((c) => c.slug === category);
-                    if (parent) return parent.name;
-                    for (const p of options.categories) {
-                      const child = p.children?.find((ch) => ch.slug === category);
-                      if (child) return child.name;
-                    }
-                    return undefined;
-                  })()
-                : undefined
-          }
+          categoryName={viewBrands ? undefined : selectedCategoryName}
           bestSellers={bestSellers}
           viewBrands={viewBrands}
         />
@@ -321,7 +307,11 @@ export default async function ShopPage({
             <div className="flex flex-col lg:flex-row lg:justify-between">
               <div className="flex items-center justify-between">
                 <h1 className="font-bold text-2xl md:text-[32px] text-black">
-                  {viewBrands ? "Brands" : "Shop"}
+                  {viewBrands
+                    ? "Brands"
+                    : bestSellers
+                      ? "Best Sellers"
+                      : selectedCategoryName ?? "All categories"}
                 </h1>
                 <MobileFilters options={options} />
               </div>

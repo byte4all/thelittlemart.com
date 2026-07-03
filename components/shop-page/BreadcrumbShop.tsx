@@ -18,6 +18,8 @@ type BreadcrumbShopProps = {
   viewBrands?: boolean;
 };
 
+const ALL_CATEGORIES_LABEL = "All categories";
+
 const BreadcrumbShop = ({ categoryName, bestSellers, viewBrands }: BreadcrumbShopProps) => {
   const currentSegment = viewBrands ? "Brands" : bestSellers ? "Best Sellers" : categoryName;
 
@@ -33,10 +35,10 @@ const BreadcrumbShop = ({ categoryName, bestSellers, viewBrands }: BreadcrumbSho
         <BreadcrumbItem>
           {currentSegment ? (
             <BreadcrumbLink asChild>
-              <Link href="/shop">Shop</Link>
+              <Link href="/shop">{ALL_CATEGORIES_LABEL}</Link>
             </BreadcrumbLink>
           ) : (
-            <BreadcrumbPage>Shop</BreadcrumbPage>
+            <BreadcrumbPage>{ALL_CATEGORIES_LABEL}</BreadcrumbPage>
           )}
         </BreadcrumbItem>
         {currentSegment && (
