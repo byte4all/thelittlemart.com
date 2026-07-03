@@ -13,7 +13,7 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/about-us",
 });
 
-const aboutImageSrc = "/products/footer/about-us/stacked-zen-stones-sand-background-art-balance-concept.webp";
+const aboutImageSrc = "/products/footer/about-us/grocery-cart-with-colourful-gift-boxes.webp";
 
 export default function AboutUsPage() {
   return (
@@ -26,7 +26,7 @@ export default function AboutUsPage() {
           <div className="relative w-full aspect-[4/3] min-h-[200px] rounded-lg overflow-hidden bg-black/5">
             <Image
               src={aboutImageSrc}
-              alt="Stacked zen stones on sand — balance and quality"
+              alt="Grocery cart with colourful gift boxes"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"

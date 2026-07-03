@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getFilters } from "@/lib/shop-data";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const data = await getFilters(prisma);
+    const category = request.nextUrl.searchParams.get("category") ?? undefined;
+    const data = await getFilters(prisma, { category });
     return NextResponse.json({
       success: true,
       ...data,

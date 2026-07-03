@@ -162,7 +162,7 @@ export default async function ShopPage({
 
   const [filtersData, { products: productsRaw, total }] =
     await Promise.all([
-      getFilters(prisma),
+      getFilters(prisma, { category }),
       getProductsList(prisma, viewBrands
         ? {
             color,
@@ -171,8 +171,7 @@ export default async function ShopPage({
             maxPrice: maxPriceNum,
             limit: brandsViewLimit,
             offset: 0,
-            sortBy: "createdAt",
-            order: "desc",
+            sortBy: "manual",
           }
         : {
             category,

@@ -27,8 +27,8 @@ export default function TrackMyOrderPage() {
           <p className={s.p}>
             If you have an account, you can view your order history and tracking
             information in your{" "}
-            <Link href="/account" className={s.link}>
-              account
+            <Link href="/account/orders" className={s.link}>
+              order
             </Link>{" "}
             page. Log in and go to Orders to see status and any tracking numbers.
           </p>

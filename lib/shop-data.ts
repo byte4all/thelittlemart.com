@@ -249,6 +249,69 @@ function reorderProductsByIds<T extends { id: string }>(
     .filter((p): p is T => p != null);
 }
 
+/** Brand slugs in first-seen order along category → subcategory → product sort. */
+async function getOrderedBrandSlugs(
+  prisma: PrismaClient,
+  categorySlug?: string
+): Promise<string[]> {
+  const orderedProductIds = categorySlug
+    ? await getOrderedProductIdsForCategory(prisma, categorySlug)
+    : await getOrderedProductIdsForAllCategories(prisma);
+
+  if (orderedProductIds.length === 0) return [];
+
+  const products = await prisma.product.findMany({
+    where: {
+      id: { in: orderedProductIds },
+      isActive: true,
+      brandId: { not: null },
+    },
+    select: {
+      id: true,
+      brand: { select: { slug: true } },
+    },
+  });
+
+  const brandSlugByProductId = new Map(
+    products.map((p) => [p.id, p.brand?.slug])
+  );
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const productId of orderedProductIds) {
+    const slug = brandSlugByProductId.get(productId);
+    if (slug && !seen.has(slug)) {
+      seen.add(slug);
+      result.push(slug);
+    }
+  }
+
+  return result;
+}
+
+function orderBrandsBySlugs<T extends { slug: string; name: string }>(
+  brands: T[],
+  orderedSlugs: string[]
+): T[] {
+  const bySlug = new Map(brands.map((b) => [b.slug, b]));
+  const ordered: T[] = [];
+  const used = new Set<string>();
+
+  for (const slug of orderedSlugs) {
+    const brand = bySlug.get(slug);
+    if (brand) {
+      ordered.push(brand);
+      used.add(slug);
+    }
+  }
+
+  const remainder = brands
+    .filter((b) => !used.has(b.slug))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return [...ordered, ...remainder];
+}
+
 export async function getProductsList(
   prisma: PrismaClient,
   options: ProductsListOptions = {}
@@ -355,8 +418,14 @@ export async function getProductsList(
   };
 }
 
-export async function getFilters(prisma: PrismaClient) {
-  const [categories, brands, priceRange, productsForAttrs] = await Promise.all([
+export async function getFilters(
+  prisma: PrismaClient,
+  options: { category?: string } = {}
+) {
+  const categorySlug = options.category?.trim() || undefined;
+
+  const [categories, brands, orderedBrandSlugs, priceRange, productsForAttrs] =
+    await Promise.all([
     prisma.category.findMany({
       where: { parentId: null },
       select: {
@@ -374,6 +443,7 @@ export async function getFilters(prisma: PrismaClient) {
       select: { id: true, name: true, slug: true },
       orderBy: { name: "asc" },
     }),
+    getOrderedBrandSlugs(prisma, categorySlug),
     prisma.product.aggregate({
       where: { isActive: true },
       _min: { price: true },
@@ -407,9 +477,19 @@ export async function getFilters(prisma: PrismaClient) {
     slug: c.slug,
     children: (c.children ?? []).map((ch) => ({ name: ch.name, slug: ch.slug })),
   }));
+
+  const brandOptions = brands.map((b) => ({ name: b.name, slug: b.slug }));
+  const orderedBrandOptions =
+    categorySlug && orderedBrandSlugs.length > 0
+      ? orderBrandsBySlugs(
+          brandOptions.filter((b) => orderedBrandSlugs.includes(b.slug)),
+          orderedBrandSlugs
+        )
+      : orderBrandsBySlugs(brandOptions, orderedBrandSlugs);
+
   return {
     categories: categoriesHierarchical,
-    brands: brands.map((b) => ({ name: b.name, slug: b.slug })),
+    brands: orderedBrandOptions,
     priceRange: { min: priceMin, max: Math.max(priceMax, priceMin) },
     colors: Array.from(colorSet).sort(),
     sizes: Array.from(sizeSet).sort(),
