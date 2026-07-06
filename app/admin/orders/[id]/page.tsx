@@ -29,6 +29,8 @@ interface Order {
   total: number
   tax: number
   shipping: number
+  promoCode: string | null
+  discountAmount: number
   shippingAddress: StoredAddress
   trackingNumber: string | null
   trackingUrl: string | null
@@ -329,6 +331,12 @@ export default function AdminOrderDetailPage({
               </li>
             ))}
           </ul>
+          {Number(order.discountAmount) > 0 && (
+            <p className="text-sm text-green-700 mt-2">
+              Promo{order.promoCode ? ` (${order.promoCode})` : ""}: -RM{" "}
+              {Number(order.discountAmount).toFixed(2)}
+            </p>
+          )}
           <p className="mt-4 font-medium">Total: RM {Number(order.total).toFixed(2)}</p>
           <p className="text-sm text-gray-500 mt-2">
             Placed: {formatDateTime(order.createdAt)}

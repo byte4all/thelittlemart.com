@@ -12,6 +12,7 @@ import {
 } from "@/lib/fulfillment";
 import { getPickupScheduleConfig } from "@/lib/pickup-schedule-store";
 import { validatePickupSlot } from "@/lib/pickup-schedule";
+import { validatePromoCode } from "@/lib/promo-code";
 
 function generateOrderNumber(): string {
   return `ORD-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
@@ -48,11 +49,13 @@ export async function POST(request: Request) {
       items: rawItems,
       fulfillmentMethod: rawFulfillmentMethod,
       pickupScheduledAt: rawPickupScheduledAt,
+      promoCode: rawPromoCode,
     } = body as {
       shippingAddress: FulfillmentAddressInput;
       items: { slug?: string; id?: string; quantity: number }[];
       fulfillmentMethod?: FulfillmentMethod;
       pickupScheduledAt?: string;
+      promoCode?: string;
     };
 
     const fulfillmentMethod: FulfillmentMethod =
@@ -169,8 +172,26 @@ export async function POST(request: Request) {
 
     const tax = 0;
     const subtotalRounded = roundTo2(subtotal);
+
+    let discountAmount = 0;
+    let appliedPromoCode: string | undefined;
+    let promoIdToIncrement: string | undefined;
+
+    if (typeof rawPromoCode === "string" && rawPromoCode.trim()) {
+      const promoResult = await validatePromoCode(prisma, rawPromoCode, subtotalRounded);
+      if (promoResult.valid === false) {
+        return NextResponse.json(
+          { success: false, error: promoResult.error },
+          { status: 400 }
+        );
+      }
+      discountAmount = promoResult.discountAmount;
+      appliedPromoCode = promoResult.promo.code;
+      promoIdToIncrement = promoResult.promo.id;
+    }
+
     const shipping = calcDeliveryFee(subtotalRounded, fulfillmentMethod);
-    const total = roundTo2(subtotalRounded + tax + shipping);
+    const total = roundTo2(subtotalRounded - discountAmount + tax + shipping);
     const orderNumber = generateOrderNumber();
     const storedAddress = buildStoredFulfillmentAddress(
       fulfillmentMethod,
@@ -186,6 +207,8 @@ export async function POST(request: Request) {
           total,
           tax,
           shipping,
+          discountAmount,
+          ...(appliedPromoCode && { promoCode: appliedPromoCode }),
           shippingAddress: storedAddress as object,
           paymentStatus: "PENDING",
           paymentMethod: "billplz",
@@ -202,6 +225,13 @@ export async function POST(request: Request) {
             quantity: oi.quantity,
             price: oi.price,
           },
+        });
+      }
+
+      if (promoIdToIncrement) {
+        await tx.promoCode.update({
+          where: { id: promoIdToIncrement },
+          data: { usedCount: { increment: 1 } },
         });
       }
 

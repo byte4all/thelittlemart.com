@@ -15,7 +15,7 @@ import { TbBasketExclamation } from "react-icons/tb";
 import React from "react";
 import { RootState } from "@/lib/store";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
-import { setFulfillmentMethod } from "@/lib/features/carts/cartsSlice";
+import { clearPromo, setFulfillmentMethod, setPromo } from "@/lib/features/carts/cartsSlice";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
@@ -29,13 +29,55 @@ export default function CartPage() {
   const checkoutPending = searchParams.get("checkout") === "pending";
   const user = useAuthUser();
   const dispatch = useAppDispatch();
-  const { cart, totalPrice, fulfillmentMethod } = useAppSelector(
+  const { cart, totalPrice, fulfillmentMethod, promo } = useAppSelector(
     (state: RootState) => state.carts
   );
   const { formatPrice } = useCurrency();
   const subtotalRounded = roundTo2(totalPrice);
+  const promoDiscount = promo?.discountAmount ?? 0;
   const deliveryFee = calcDeliveryFee(subtotalRounded, fulfillmentMethod);
-  const totalRounded = roundTo2(subtotalRounded + deliveryFee);
+  const totalRounded = roundTo2(subtotalRounded - promoDiscount + deliveryFee);
+  const [promoInput, setPromoInput] = React.useState(promo?.code ?? "");
+  const [promoError, setPromoError] = React.useState<string | null>(null);
+  const [promoLoading, setPromoLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    setPromoInput(promo?.code ?? "");
+  }, [promo?.code]);
+
+  const handleApplyPromo = async () => {
+    const code = promoInput.trim();
+    if (!code) {
+      setPromoError("Please enter a promo code.");
+      return;
+    }
+
+    setPromoLoading(true);
+    setPromoError(null);
+    try {
+      const res = await fetch("/api/shop/promo/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, subtotal: subtotalRounded }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPromoError(data.error || "Invalid promo code.");
+        return;
+      }
+      dispatch(setPromo({ code: data.code, discountAmount: data.discountAmount }));
+    } catch {
+      setPromoError("Failed to apply promo code.");
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    dispatch(clearPromo());
+    setPromoInput("");
+    setPromoError(null);
+  };
 
   return (
     <main className="pb-20">
@@ -89,6 +131,16 @@ export default function CartPage() {
                     subtotal={subtotalRounded}
                     formatPrice={formatPrice}
                   />
+                  {promo && promoDiscount > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="md:text-xl text-foreground/60">
+                        Promo ({promo.code})
+                      </span>
+                      <span className="md:text-xl font-bold text-green-700">
+                        -{formatPrice(promoDiscount)}
+                      </span>
+                    </div>
+                  )}
                   <hr className="border-t-brand/10" />
                   <div className="flex items-center justify-between">
                     <span className="md:text-xl text-foreground">Total</span>
@@ -106,16 +158,37 @@ export default function CartPage() {
                       type="text"
                       name="code"
                       placeholder="Add promo code"
-                      className="bg-transparent placeholder:text-black/40"
+                      value={promoInput}
+                      onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                      className="bg-transparent placeholder:text-black/40 uppercase"
+                      disabled={!!promo}
                     />
                   </InputGroup>
-                  <Button
-                    type="button"
-                    className="rounded-full w-full max-w-[119px] h-[48px]"
-                  >
-                    Apply
-                  </Button>
+                  {promo ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleRemovePromo}
+                      className="rounded-full w-full max-w-[119px] h-[48px]"
+                    >
+                      Remove
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      onClick={handleApplyPromo}
+                      disabled={promoLoading}
+                      className="rounded-full w-full max-w-[119px] h-[48px]"
+                    >
+                      {promoLoading ? "…" : "Apply"}
+                    </Button>
+                  )}
                 </div>
+                {promoError && (
+                  <p className="text-sm text-red-600" role="alert">
+                    {promoError}
+                  </p>
+                )}
                 <Button
                   type="button"
                   className="text-sm md:text-base font-medium rounded-full w-full py-4 h-[54px] md:h-[60px] group"

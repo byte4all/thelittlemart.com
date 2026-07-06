@@ -19,6 +19,10 @@ type Order = {
   status: string;
   paymentStatus: string;
   total: number;
+  subtotal: number;
+  shipping: number;
+  discountAmount: number;
+  promoCode: string | null;
   createdAt: string;
   fulfillmentType: "pickup" | "shipping";
   trackingNumber: string | null;
@@ -175,6 +179,24 @@ export default function AccountOrderDetailPage() {
                 </li>
               ))}
             </ul>
+            <div className="mt-3 space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-[var(--stack-muted-color,#6b7280)]">Subtotal</span>
+                <span>RM {order.subtotal.toFixed(2)}</span>
+              </div>
+              {order.discountAmount > 0 && (
+                <div className="flex justify-between text-green-700">
+                  <span>
+                    Promo{order.promoCode ? ` (${order.promoCode})` : ""}
+                  </span>
+                  <span>-RM {order.discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-[var(--stack-muted-color,#6b7280)]">Shipping</span>
+                <span>{order.shipping > 0 ? `RM ${order.shipping.toFixed(2)}` : "FREE"}</span>
+              </div>
+            </div>
             <p className="mt-3 text-base font-semibold">Total: RM {order.total.toFixed(2)}</p>
           </div>
 

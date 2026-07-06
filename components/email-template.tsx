@@ -4,6 +4,10 @@ export type OrderConfirmationProps = {
   orderNumber: string;
   items: { name: string; quantity: number; price: number }[];
   total: number;
+  subtotal?: number;
+  discountAmount?: number;
+  promoCode?: string | null;
+  shipping?: number;
   shippingAddress?: {
     type?: "pickup" | "shipping";
     fullName?: string;
@@ -26,7 +30,16 @@ function escapeHtml(s: string): string {
 
 /** Plain HTML for SMTP (avoids react-dom/server in Next.js bundles). */
 export function orderConfirmationEmailHtml(props: OrderConfirmationProps): string {
-  const { orderNumber, items, total, shippingAddress: address } = props;
+  const {
+    orderNumber,
+    items,
+    total,
+    subtotal,
+    discountAmount = 0,
+    promoCode,
+    shipping = 0,
+    shippingAddress: address,
+  } = props;
   const lines = items
     .map(
       (i) =>
@@ -54,6 +67,23 @@ export function orderConfirmationEmailHtml(props: OrderConfirmationProps): strin
       <th style="padding:8px 0">Item</th><th style="padding:8px 0">Qty</th>
       <th style="padding:8px 0">Unit price</th><th style="padding:8px 0">Subtotal</th>
     </tr></thead><tbody>${lines}</tbody></table>
+  ${
+    subtotal != null
+      ? `<p style="margin-top:16px;font-size:14px;color:#374151">Subtotal: RM ${Number(subtotal).toFixed(2)}</p>`
+      : ""
+  }
+  ${
+    discountAmount > 0
+      ? `<p style="margin:4px 0;font-size:14px;color:#166534">Promo${promoCode ? ` (${escapeHtml(promoCode)})` : ""}: -RM ${Number(discountAmount).toFixed(2)}</p>`
+      : ""
+  }
+  ${
+    shipping > 0
+      ? `<p style="margin:4px 0;font-size:14px;color:#374151">Shipping: RM ${Number(shipping).toFixed(2)}</p>`
+      : shipping === 0 && subtotal != null
+        ? `<p style="margin:4px 0;font-size:14px;color:#374151">Shipping: FREE</p>`
+        : ""
+  }
   <p style="margin-top:16px;font-size:18px"><strong>Total: RM ${Number(total).toFixed(2)}</strong></p>
   ${addressBlock}
   <p style="margin-top:24px;color:#6b7280;font-size:14px">— thelittlemart</p>

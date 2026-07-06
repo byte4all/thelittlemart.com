@@ -24,13 +24,14 @@ export default function CheckoutPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAuthUser();
-  const { cart, totalPrice, fulfillmentMethod } = useAppSelector(
+  const { cart, totalPrice, fulfillmentMethod, promo } = useAppSelector(
     (state: RootState) => state.carts
   );
   const { formatPrice } = useCurrency();
   const subtotalRounded = roundTo2(totalPrice);
+  const promoDiscount = promo?.discountAmount ?? 0;
   const deliveryFee = calcDeliveryFee(subtotalRounded, fulfillmentMethod);
-  const orderTotalRounded = roundTo2(subtotalRounded + deliveryFee);
+  const orderTotalRounded = roundTo2(subtotalRounded - promoDiscount + deliveryFee);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pickupScheduledAt, setPickupScheduledAt] = useState<string | null>(null);
@@ -109,6 +110,7 @@ export default function CheckoutPage() {
             country: shipping.country,
           },
           items,
+          ...(promo?.code && { promoCode: promo.code }),
         }),
       });
       const data = await res.json();
@@ -277,6 +279,14 @@ export default function CheckoutPage() {
                 subtotal={subtotalRounded}
                 formatPrice={formatPrice}
               />
+              {promo && promoDiscount > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-foreground/60">Promo ({promo.code})</span>
+                  <span className="font-medium text-green-700">
+                    -{formatPrice(promoDiscount)}
+                  </span>
+                </div>
+              )}
               <hr className="border-t-brand/10" />
               <p className="text-2xl font-bold">{formatPrice(orderTotalRounded)}</p>
             </div>

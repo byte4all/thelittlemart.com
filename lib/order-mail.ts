@@ -24,6 +24,10 @@ export async function sendOrderConfirmationEmail(params: {
   orderNumber: string;
   items: OrderSummaryItem[];
   total: number;
+  subtotal?: number;
+  discountAmount?: number;
+  promoCode?: string | null;
+  shipping?: number;
   shippingAddress?: OrderSummaryAddress | null;
 }): Promise<{ ok: boolean; error?: string }> {
   if (!isSmtpConfigured()) {
@@ -39,6 +43,10 @@ export async function sendOrderConfirmationEmail(params: {
     orderNumber: params.orderNumber,
     items: params.items,
     total: params.total,
+    subtotal: params.subtotal,
+    discountAmount: params.discountAmount,
+    promoCode: params.promoCode,
+    shipping: params.shipping,
     shippingAddress: params.shippingAddress,
   };
 

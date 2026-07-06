@@ -12,7 +12,11 @@ type OrderWithDetails = {
   orderNumber: string;
   status: string;
   paymentStatus?: string;
+  subtotal?: { toString(): string } | number;
   total: { toString(): string } | number;
+  shipping?: { toString(): string } | number;
+  discountAmount?: { toString(): string } | number;
+  promoCode?: string | null;
   shippingAddress: unknown;
   user: { email: string | null; name: string | null } | null;
   items: Array<{
@@ -132,6 +136,11 @@ export async function sendOrderConfirmationForOrderData(
       price: Number(oi.price),
     })),
     total: Number(order.total),
+    subtotal: order.subtotal != null ? Number(order.subtotal) : undefined,
+    discountAmount:
+      order.discountAmount != null ? Number(order.discountAmount) : undefined,
+    promoCode: order.promoCode,
+    shipping: order.shipping != null ? Number(order.shipping) : undefined,
     shippingAddress: shippingAddress ?? undefined,
   });
 

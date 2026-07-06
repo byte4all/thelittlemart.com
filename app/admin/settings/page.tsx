@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import PromoCodesSection from '@/components/admin/PromoCodesSection'
 import { FiSave } from 'react-icons/fi'
 import {
   DAYS_OF_WEEK,
@@ -128,7 +129,7 @@ export default function AdminSettingsPage() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-brand">Settings</h1>
-          <p className="mt-2 text-gray-600">Site currency and pickup scheduling rules</p>
+          <p className="mt-2 text-gray-600">Site currency, pickup scheduling, and promo codes</p>
         </div>
         <button
           type="button"
@@ -166,6 +167,8 @@ export default function AdminSettingsPage() {
           ))}
         </select>
       </section>
+
+      <PromoCodesSection />
 
       <section className="bg-white shadow rounded-lg p-6 mb-6">
         <h2 className="text-lg font-semibold mb-2">Pickup scheduling</h2>
