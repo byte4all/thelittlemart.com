@@ -104,6 +104,10 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <Header />
+      {/* Tight gap before Brands carousel (was mb-[50px] sm:mb-20) */}
+      <div className="mb-4 sm:mb-6">
+        <DressStyle />
+      </div>
       <Brands />
       <main className="my-[50px] sm:my-[72px]">
         {newArrivalsData.length > 0 && (
@@ -131,9 +135,6 @@ export default async function Home() {
             />
           </div>
         )}
-        <div className="mb-[50px] sm:mb-20">
-          <DressStyle />
-        </div>
         {reviewsFromDb.length > 0 && <Reviews data={reviewsFromDb} />}
       </main>
     </>

@@ -5,8 +5,9 @@ import DressStyleCard from "./DressStyleCard";
 
 const DressStyle = () => {
   return (
-    <div className="px-4 xl:px-0">
-      <section className="max-w-frame mx-auto bg-[#1a1a1a] px-6 pb-6 pt-10 md:p-[70px] rounded-[40px] text-center">
+    <div className="px-4 pt-6 xl:px-0">
+      {/* pt only — no bottom padding so gap to Brands stays small */}
+      <section className="max-w-frame mx-auto bg-[#1a1a1a] px-6 pb-4 pt-10 md:px-[70px] md:pt-[70px] md:pb-8 rounded-[40px] text-center">
         <motion.h2
           initial={{ y: "100px", opacity: 0 }}
           whileInView={{ y: "0", opacity: 1 }}
