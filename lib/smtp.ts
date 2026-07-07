@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import type Transporter from "nodemailer/lib/mailer";
+import { getEmailLogoAttachment } from "@/lib/email-logo";
 
 let transporter: Transporter | null = null;
 
@@ -82,11 +83,20 @@ export async function sendSmtpEmail(params: {
     const bcc = Array.isArray(params.bcc)
       ? params.bcc.map((e) => e.trim().toLowerCase()).filter(Boolean)
       : params.bcc?.trim().toLowerCase();
+    const logo = getEmailLogoAttachment();
     await getTransporter().sendMail({
       from: getOrderMailFrom(),
       to: normalizedTo,
       subject: params.subject,
       html: params.html,
+      attachments: [
+        {
+          filename: logo.filename,
+          path: logo.path,
+          cid: logo.cid,
+          contentType: logo.contentType,
+        },
+      ],
       ...(replyTo ? { replyTo } : {}),
       ...(bcc && (Array.isArray(bcc) ? bcc.length > 0 : true) ? { bcc } : {}),
     });
