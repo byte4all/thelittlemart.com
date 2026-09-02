@@ -1,3 +1,4 @@
+import { checkBotId } from "botid/server";
 import { prisma } from "@/lib/prisma";
 import { addContactToResend } from "@/lib/resend";
 import { neonAuth } from "./server";
@@ -104,6 +105,11 @@ export function isAdminAuthFailure(result: AdminAuthResult): result is AdminAuth
  */
 export async function authAdmin(_request?: Request): Promise<AdminAuthResult> {
   try {
+    const verification = await checkBotId();
+    if (verification.isBot) {
+      return { ok: false, status: 403, error: "Access denied" };
+    }
+
     const authUser = await getSessionUser();
 
     if (!authUser) {

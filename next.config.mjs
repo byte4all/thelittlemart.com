@@ -1,8 +1,10 @@
+import { withBotId } from 'botid/next/config';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    formats: ["image/avif", "image/webp"],
+    formats: ['image/avif', 'image/webp'],
   },
 };
 
-export default nextConfig;
+export default withBotId(nextConfig);

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { checkBotId } from "botid/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthUserAndSync } from "@/lib/auth";
 import { addContactToResend } from "@/lib/resend";
@@ -43,6 +44,11 @@ async function resolveItems(
 
 export async function POST(request: Request) {
   try {
+    const verification = await checkBotId();
+    if (verification.isBot) {
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    }
+
     const body = await request.json();
     const {
       shippingAddress,
